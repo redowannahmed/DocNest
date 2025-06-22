@@ -1,0 +1,43 @@
+/* Modernized QuickActions.css */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.quick-action-card {
+  background-color: #ffffff;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.quick-action-card:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.action-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: #0ea5e9;
+}
+
+.action-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}

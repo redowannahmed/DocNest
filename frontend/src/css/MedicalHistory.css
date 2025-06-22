@@ -1,0 +1,120 @@
+/* Modernized MedicalHistory.css */
+.medical-history {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+.search-container {
+  position: sticky;
+  top: 4rem;
+  background-color: #f8fafc;
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+.search-input,
+.filter-select {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.search-input {
+  flex-grow: 1;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0f172a;
+}
+
+.visits-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.visit-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.visit-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.visit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.visit-date {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.visit-meta {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.visit-icon {
+  color: #94a3b8;
+  transition: transform 0.3s;
+}
+
+.visit-details {
+  background-color: #f8fafc;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section-title {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.images-container {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+}
+
+.prescription-image,
+.report-image {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.doctor-notes {
+  border-left: 4px solid #0d9488;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #334155;
+}

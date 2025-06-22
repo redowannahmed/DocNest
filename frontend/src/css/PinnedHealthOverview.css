@@ -1,0 +1,57 @@
+/* Modernized PinnedHealthOverview.css */
+.pinned-health-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .pinned-health-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.health-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.health-card-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #0f172a;
+}
+
+.health-tags-container {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.condition-tag,
+.medication-tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.condition-tag {
+  background-color: #ccfbf1;
+  color: #0f766e;
+}
+
+.medication-tag {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.condition-tag:hover,
+.medication-tag:hover {
+  background-color: #bae6fd;
+  transform: scale(1.05);
+}
