@@ -11,10 +11,7 @@ export default function QuickActions() {
   return (
     <div className="quick-actions-grid">
       {actions.map((action, idx) => (
-        <div
-          key={idx}
-          className="quick-action-card"
-        >
+        <div key={idx} className="quick-action-card">
           <div className="action-icon">{action.icon}</div>
           <div className="action-label">{action.label}</div>
         </div>

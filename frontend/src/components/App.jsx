@@ -10,8 +10,8 @@ export default function App() {
       <TopBar />
       <div className="content">
         <ProfileSummaryCard />
-        <PinnedHealthOverview />
         <QuickActions />
+        <PinnedHealthOverview />
         <MedicalHistory />
       </div>
     </div>

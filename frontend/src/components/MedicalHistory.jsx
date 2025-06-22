@@ -28,15 +28,14 @@ export default function MedicalHistory() {
           <option>Last 7 Days</option>
         </select>
       </div>
+
       <h3 className="section-title">
-        <i className="fa fa-calendar"></i> Your Medical Visits
+        Your Medical Visits
       </h3>
+
       <div className="visits-container">
         {dummyVisits.map((visit) => (
-          <div
-            key={visit.id}
-            className="visit-card"
-          >
+          <div key={visit.id} className="visit-card">
             <div
               className="visit-header"
               onClick={() =>
@@ -44,17 +43,22 @@ export default function MedicalHistory() {
               }
             >
               <div>
-                <div className="visit-date">📆 {visit.date}</div>
+                <div className="visit-date">{visit.date}</div>
                 <div className="visit-meta">
-                  👨‍⚕️ {visit.doctor} — 📝 {visit.reason}
+                  {visit.doctor} — {visit.reason}
                 </div>
               </div>
-              <i className="fa fa-chevron-down visit-icon"></i>
+              <span
+                className={`visit-icon ${expandedId === visit.id ? "rotated" : ""}`}
+              >
+                ▼
+              </span>
             </div>
+
             {expandedId === visit.id && (
               <div className="visit-details">
                 <div className="details-section">
-                  <div className="section-title">Prescriptions</div>
+                  <div className="details-title">Prescriptions</div>
                   <div className="images-container">
                     {visit.prescriptionImgs.map((img, idx) => (
                       <img
@@ -66,8 +70,9 @@ export default function MedicalHistory() {
                     ))}
                   </div>
                 </div>
+
                 <div className="details-section">
-                  <div className="section-title">Test Reports</div>
+                  <div className="details-title">Test Reports</div>
                   <div className="images-container">
                     {visit.testReports.map((img, idx) => (
                       <img
@@ -79,8 +84,9 @@ export default function MedicalHistory() {
                     ))}
                   </div>
                 </div>
+
                 <div className="details-section">
-                  <div className="section-title">Doctor Notes</div>
+                  <div className="details-title">Doctor Notes</div>
                   <blockquote className="doctor-notes">
                     {visit.notes}
                   </blockquote>

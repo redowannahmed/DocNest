@@ -1,25 +1,25 @@
-/* Modernized MedicalHistory.css */
 .medical-history {
   width: 100%;
   font-family: 'Inter', sans-serif;
+  color: #1e293b;
 }
 
 .search-container {
   position: sticky;
   top: 4rem;
-  background-color: #f8fafc;
+  background-color: #f9fafb;
   padding: 0.75rem 1rem;
   display: flex;
   gap: 0.75rem;
-  z-index: 10;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .search-input,
 .filter-select {
-  border: 1px solid #d1d5db;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
 }
 
 .search-input {
@@ -27,14 +27,9 @@
 }
 
 .section-title {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #0f172a;
+  margin: 2rem 0 1rem;
 }
 
 .visits-container {
@@ -45,41 +40,46 @@
 
 .visit-card {
   background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  transition: box-shadow 0.3s ease;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .visit-card:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-color: #3b82f6;
+  background-color: #f8fafc;
 }
 
 .visit-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   cursor: pointer;
 }
 
 .visit-date {
   font-weight: 600;
-  color: #0f172a;
 }
 
 .visit-meta {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: #64748b;
+  margin-top: 0.25rem;
 }
 
 .visit-icon {
-  color: #94a3b8;
-  transition: transform 0.3s;
+  font-size: 0.8rem;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.visit-icon.rotated {
+  transform: rotate(180deg);
 }
 
 .visit-details {
-  background-color: #f8fafc;
+  background-color: #f9fafb;
   padding: 1rem 1.25rem;
   display: flex;
   flex-direction: column;
@@ -92,9 +92,10 @@
   gap: 0.5rem;
 }
 
-.section-title {
-  font-weight: 600;
-  color: #0f172a;
+.details-title {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #334155;
 }
 
 .images-container {
@@ -105,16 +106,16 @@
 
 .prescription-image,
 .report-image {
-  width: 6rem;
-  height: 6rem;
+  width: 5rem;
+  height: 5rem;
   object-fit: cover;
   border-radius: 0.5rem;
   border: 1px solid #e2e8f0;
 }
 
 .doctor-notes {
-  border-left: 4px solid #0d9488;
+  border-left: 3px solid #3b82f6;
   padding-left: 1rem;
   font-style: italic;
-  color: #334155;
+  color: #475569;
 }
