@@ -15,12 +15,11 @@ export default function ProfileSummaryCard() {
 
         <div className="profile-info-section">
           <div className="profile-header">
-            <h1 className="profile-name">Saeed Al Mahmud</h1>
-            <div className="profile-badge">Verified</div>
+            <h1 className="profile-name">Mohammad Saeed</h1>
           </div>
           <div className="profile-details">
             <div className="detail-item">
-              <span className="detail-text">24 years old</span>
+              <span className="detail-text">23 years old</span>
             </div>
             <div className="detail-item">
               <span className="detail-text">Male</span>
