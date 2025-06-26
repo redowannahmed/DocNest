@@ -1,42 +1,105 @@
 import "../css/ProfileSummaryCard.css";
+import React, { useState } from "react";
 
-export default function ProfileSummaryCard() {
+export default function ProfileSummaryCard({ user, setUser }) {
+  const [editMode, setEditMode] = useState(false);
+  const [form, setForm] = useState({
+    name: user.name,
+    age: user.age,
+    gender: user.gender,
+    location: user.location,
+  });
+  const token = localStorage.getItem("token");
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/auth/me", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    setUser(data);
+    setEditMode(false);
+  };
+
+  if (!user) return null;
   return (
     <div className="profile-summary-card">
       <div className="profile-content">
         <div className="profile-avatar-section">
           <div className="profile-avatar">
             <div className="avatar-image">
-              <span className="avatar-initials">SA</span>
+              <span className="avatar-initials">
+                {user.name
+                  ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
+                  : ""}
+              </span>
             </div>
             <div className="status-indicator"></div>
           </div>
         </div>
-
         <div className="profile-info-section">
           <div className="profile-header">
-            <h1 className="profile-name">Mohammad Saeed</h1>
+            <h1 className="profile-name">{user.name}</h1>
           </div>
           <div className="profile-details">
             <div className="detail-item">
-              <span className="detail-text">23 years old</span>
+              <span className="detail-text">
+                {user.age ? user.age + " years old" : ""}
+              </span>
             </div>
             <div className="detail-item">
-              <span className="detail-text">Male</span>
+              <span className="detail-text">{user.gender}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-text">Dhaka, Bangladesh</span>
+              <span className="detail-text">{user.location}</span>
             </div>
           </div>
         </div>
-
         <div className="profile-actions">
-          <button className="edit-button">
-            <span>Edit Profile</span>
-          </button>
-          <button className="share-button">
-            Share
-          </button>
+          {editMode ? (
+            <form onSubmit={handleSave} className="edit-form">
+              <input
+                value={form.name}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
+                required
+              />
+              <input
+                value={form.age}
+                onChange={(e) => setForm({ ...form, age: e.target.value })}
+              />
+              <input
+                value={form.gender}
+                onChange={(e) =>
+                  setForm({ ...form, gender: e.target.value })
+                }
+              />
+              <input
+                value={form.location}
+                onChange={(e) =>
+                  setForm({ ...form, location: e.target.value })
+                }
+              />
+              <button type="submit">Save</button>
+              <button
+                type="button"
+                onClick={() => setEditMode(false)}
+              >
+                Cancel
+              </button>
+            </form>
+          ) : (
+            <button
+              className="edit-button"
+              onClick={() => setEditMode(true)}
+            >
+              <span>Edit Profile</span>
+            </button>
+          )}
+          <button className="share-button">Share</button>
         </div>
       </div>
     </div>

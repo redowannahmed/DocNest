@@ -1,12 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App.jsx";
 import "./index.css";
 import "./App.css";
 import "@fortawesome/fontawesome-free/css/all.min.css"; // Font Awesome
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+import Landing from "./components/Landing";
+
+function AppRouter() {
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const navigate = useNavigate();
+
+  const handleLogin = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", token);
+    navigate("/");
+  };
+  const handleRegister = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", token);
+    navigate("/");
+  };
+
+  return (
+    <Routes>
+      <Route path="/signin" element={<SignIn onLogin={handleLogin} />} />
+      <Route path="/signup" element={<SignUp onRegister={handleRegister} />} />
+      <Route path="/" element={<Landing user={user} setUser={setUser} />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
+}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
   </React.StrictMode>
 );
