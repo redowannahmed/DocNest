@@ -5,6 +5,7 @@ import "../css/SignIn.css";
 const SignIn = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState("patient");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
@@ -19,7 +20,7 @@ const SignIn = ({ onLogin }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
       localStorage.setItem("token", data.token);
-      onLogin(data.user, data.token);
+      onLogin({ ...data.user, selectedRole }, data.token);
     } catch (err) {
       setError(err.message);
     }
@@ -50,6 +51,16 @@ const SignIn = ({ onLogin }) => {
               onChange={e => setPassword(e.target.value)} 
               required 
             />
+          </div>
+          <div className="input-group">
+            <label>Log In As</label>
+            <select
+              value={selectedRole}
+              onChange={e => setSelectedRole(e.target.value)}
+            >
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+            </select>
           </div>
           <button type="submit">Sign In</button>
           {error && <p className="error">{error}</p>}
