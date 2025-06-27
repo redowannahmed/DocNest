@@ -8,8 +8,6 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Landing from "./components/Landing";
-import DoctorDashboard from "./components/DoctorDashboard";
-
 
 function AppRouter() {
   const [user, setUser] = useState(() => {
@@ -22,36 +20,20 @@ function AppRouter() {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
-
-  // ✅ Redirect based on role
-    if (userData.role === "doctor") {
-      navigate("/doctor");
-    } else {
-      navigate("/");
-    }
+    navigate("/");
   };
-
   const handleRegister = (userData, token) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
-
-    if (userData.role === "doctor") {
-      navigate("/doctor");
-    } else {
-      navigate("/");
-    }
+    navigate("/");
   };
-
 
   return (
     <Routes>
       <Route path="/signin" element={<SignIn onLogin={handleLogin} />} />
       <Route path="/signup" element={<SignUp onRegister={handleRegister} />} />
       <Route path="/" element={<Landing user={user} setUser={setUser} />} />
-      {user?.role === "doctor" && (
-        <Route path="/doctor" element={<DoctorDashboard />} />
-      )}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

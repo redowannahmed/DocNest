@@ -19,10 +19,6 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/auth", authRoutes);
 app.use("/api/userdata", userDataRoutes);
 
-const doctorRoutes = require("./routes/doctorRoutes");
-app.use("/api/doctor", doctorRoutes);
-
-
 // Add route to get current user info
 app.get("/api/auth/me", verifyToken, async (req, res) => {
     try {
