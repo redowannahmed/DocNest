@@ -22,14 +22,27 @@ function AppRouter() {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
-    navigate("/");
+
+  // ✅ Redirect based on role
+    if (userData.role === "doctor") {
+      navigate("/doctor");
+    } else {
+      navigate("/");
+    }
   };
+
   const handleRegister = (userData, token) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
-    navigate("/");
+
+    if (userData.role === "doctor") {
+      navigate("/doctor");
+    } else {
+      navigate("/");
+    }
   };
+
 
   return (
     <Routes>
