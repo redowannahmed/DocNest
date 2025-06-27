@@ -8,6 +8,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Landing from "./components/Landing";
+import DoctorDashboard from "./components/DoctorDashboard";
+
 
 function AppRouter() {
   const [user, setUser] = useState(() => {
@@ -34,6 +36,9 @@ function AppRouter() {
       <Route path="/signin" element={<SignIn onLogin={handleLogin} />} />
       <Route path="/signup" element={<SignUp onRegister={handleRegister} />} />
       <Route path="/" element={<Landing user={user} setUser={setUser} />} />
+      {user?.role === "doctor" && (
+        <Route path="/doctor" element={<DoctorDashboard />} />
+      )}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
