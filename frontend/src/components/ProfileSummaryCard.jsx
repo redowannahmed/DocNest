@@ -99,7 +99,6 @@ export default function ProfileSummaryCard({ user, setUser }) {
               <span>Edit Profile</span>
             </button>
           )}
-          <button className="share-button">Share</button>
         </div>
       </div>
     </div>

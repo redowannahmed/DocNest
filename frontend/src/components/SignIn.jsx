@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../css/SignIn.css";
 
 const SignIn = ({ onLogin }) => {
@@ -26,13 +27,37 @@ const SignIn = ({ onLogin }) => {
 
   return (
     <div className="auth-container">
-      <h2>Sign In</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email Address" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <button type="submit">Sign In</button>
-        {error && <p className="error">{error}</p>}
-      </form>
+      <div>
+        <h2>Let's Start Learning</h2>
+        <p className="auth-subtitle">Please login or sign up to continue</p>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <span className="input-icon">✉️</span>
+            <input 
+              type="email" 
+              placeholder="Your Email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required 
+            />
+          </div>
+          <div className="input-group">
+            <span className="input-icon">🔒</span>
+            <input 
+              type="password" 
+              placeholder="Your Password" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+              required 
+            />
+          </div>
+          <button type="submit">Sign In</button>
+          {error && <p className="error">{error}</p>}
+        </form>
+        <div className="auth-links">
+          <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
+        </div>
+      </div>
     </div>
   );
 };
