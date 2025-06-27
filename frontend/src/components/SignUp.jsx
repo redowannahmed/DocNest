@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "../css/SignUp.css";
 
 const SignUp = ({ onRegister }) => {
-  const [form, setForm] = useState({ name: "", email: "", password: "", age: "", gender: "", location: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", age: "", gender: "", location: "", role: "patient" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
@@ -95,6 +95,18 @@ const SignUp = ({ onRegister }) => {
                 value={form.location} 
                 onChange={handleChange} 
               />
+            </div>
+            <div className="input-group">
+              <label>Register As</label>
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                required
+              >
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+              </select>
             </div>
           </div>
           <button type="submit">Create Account</button>
