@@ -4,33 +4,8 @@ import { useState } from "react"
 import "../css/MedicalHistory.css"
 
 export default function MedicalHistory({ user, medicalHistory = [], setMedicalHistory }) {
-  const [form, setForm] = useState({
-    date: "",
-    doctor: "",
-    reason: "",
-    prescriptionImgs: "",
-    testReports: "",
-    notes: "",
-  })
   const [expandedId, setExpandedId] = useState(null)
-  const token = localStorage.getItem("token")
-
-  const addVisit = async (e) => {
-    e.preventDefault()
-    const payload = {
-      ...form,
-      prescriptionImgs: form.prescriptionImgs ? form.prescriptionImgs.split(",") : [],
-      testReports: form.testReports ? form.testReports.split(",") : [],
-    }
-    const res = await fetch("/api/userdata/medical-history", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: JSON.stringify(payload),
-    })
-    const data = await res.json()
-    setMedicalHistory([...medicalHistory, data])
-    setForm({ date: "", doctor: "", reason: "", prescriptionImgs: "", testReports: "", notes: "" })
-  }
+  const [imageModal, setImageModal] = useState({ isOpen: false, src: "", alt: "" })
 
   // Mock data to match the design if no real data
   const mockVisits = [
@@ -71,6 +46,37 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
 
   const visitsToShow = medicalHistory.length > 0 ? medicalHistory : mockVisits
 
+  const formatDate = (dateString) => {
+    if (!dateString) return ""
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
+
+  // Function to get image URL from different data structures
+  const getImageUrl = (img) => {
+    if (typeof img === 'string') return img
+    if (img && typeof img === 'object' && img.url) return img.url
+    return "/placeholder.svg?height=100&width=100"
+  }
+
+  // Function to open image in modal
+  const openImageModal = (imageUrl, altText) => {
+    setImageModal({
+      isOpen: true,
+      src: imageUrl,
+      alt: altText
+    })
+  }
+
+  // Function to close image modal
+  const closeImageModal = () => {
+    setImageModal({ isOpen: false, src: "", alt: "" })
+  }
+
   return (
     <div className="medical-history">
       <div className="search-container">
@@ -90,7 +96,7 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
                   {visit.status && <span className="status-badge">{visit.status}</span>}
                 </div>
                 <div className="visit-date-reason">
-                  <span>{visit.date?.slice(0, 10) || visit.date}</span>
+                  <span>{formatDate(visit.date)}</span>
                   <span>{visit.reason}</span>
                 </div>
               </div>
@@ -101,25 +107,55 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
               <div className="visit-details">
                 <div className="details-section">
                   <strong>Notes:</strong>
-                  <p>{visit.notes}</p>
+                  <p>{visit.notes || "No notes available"}</p>
                 </div>
+
                 <div className="details-section">
                   <strong>Prescriptions:</strong>
-                  {visit.prescriptionImgs?.length > 0 ? (
-                    visit.prescriptionImgs.map((img, i) => (
-                      <img key={i} src={img || "/placeholder.svg"} alt="Prescription" />
-                    ))
-                  ) : (
-                    <p>No prescriptions uploaded</p>
-                  )}
+                  <div className="files-grid">
+                    {visit.prescriptionImgs?.length > 0 ? (
+                      visit.prescriptionImgs.map((img, i) => {
+                        const imageUrl = getImageUrl(img)
+                        return (
+                          <div key={i} className="file-item">
+                            <img
+                              src={imageUrl}
+                              alt={`Prescription ${i + 1}`}
+                              className="file-thumbnail"
+                              onClick={() => openImageModal(imageUrl, `Prescription ${i + 1}`)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <p className="no-files">No prescriptions uploaded</p>
+                    )}
+                  </div>
                 </div>
+
                 <div className="details-section">
                   <strong>Test Reports:</strong>
-                  {visit.testReports?.length > 0 ? (
-                    visit.testReports.map((img, i) => <img key={i} src={img || "/placeholder.svg"} alt="Test Report" />)
-                  ) : (
-                    <p>No test reports uploaded</p>
-                  )}
+                  <div className="files-grid">
+                    {visit.testReports?.length > 0 ? (
+                      visit.testReports.map((img, i) => {
+                        const imageUrl = getImageUrl(img)
+                        return (
+                          <div key={i} className="file-item">
+                            <img
+                              src={imageUrl}
+                              alt={`Test Report ${i + 1}`}
+                              className="file-thumbnail"
+                              onClick={() => openImageModal(imageUrl, `Test Report ${i + 1}`)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <p className="no-files">No test reports uploaded</p>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -127,46 +163,22 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
         ))}
       </div>
 
-      <form onSubmit={addVisit} className="add-form">
-        <input
-          name="date"
-          type="date"
-          value={form.date}
-          onChange={(e) => setForm({ ...form, date: e.target.value })}
-          required
-        />
-        <input
-          name="doctor"
-          placeholder="Doctor"
-          value={form.doctor}
-          onChange={(e) => setForm({ ...form, doctor: e.target.value })}
-        />
-        <input
-          name="reason"
-          placeholder="Reason"
-          value={form.reason}
-          onChange={(e) => setForm({ ...form, reason: e.target.value })}
-        />
-        <input
-          name="prescriptionImgs"
-          placeholder="Prescription Image URLs (comma separated)"
-          value={form.prescriptionImgs}
-          onChange={(e) => setForm({ ...form, prescriptionImgs: e.target.value })}
-        />
-        <input
-          name="testReports"
-          placeholder="Test Report URLs (comma separated)"
-          value={form.testReports}
-          onChange={(e) => setForm({ ...form, testReports: e.target.value })}
-        />
-        <input
-          name="notes"
-          placeholder="Notes"
-          value={form.notes}
-          onChange={(e) => setForm({ ...form, notes: e.target.value })}
-        />
-        <button type="submit">Add Visit</button>
-      </form>
+      {/* Image Modal */}
+      {imageModal.isOpen && (
+        <div className="image-modal-overlay" onClick={closeImageModal}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="image-modal-close" onClick={closeImageModal}>
+              ×
+            </button>
+            <img
+              src={imageModal.src}
+              alt={imageModal.alt}
+              className="image-modal-img"
+            />
+            <p className="image-modal-caption">{imageModal.alt}</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,4 +1,3 @@
-/* Updated QuickActions.css */
 .quick-actions-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -14,7 +13,7 @@
   }
 }
 
-.quick-action-card {  
+.quick-action-card {
   background-color: white;
   padding: 1rem;
   border-radius: 0.75rem;
