@@ -18,8 +18,7 @@ exports.register = async (req, res) => {
             age,
             gender,
             location,
-            role: role === "doctor" ? "doctor" : "patient"
- 
+            role: role === "doctor" ? "doctor" : "patient", 
         });
 
         await newUser.save();

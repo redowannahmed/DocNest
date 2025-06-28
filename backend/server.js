@@ -6,8 +6,11 @@ require("dotenv").config();
 const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require("./routes/authRoutes");
 const userDataRoutes = require("./routes/userDataRoutes");
+const forumRoutes = require("./routes/forumRoutes");
 const { verifyToken } = require("./middleware/authMiddleware");
 const User = require("./models/User");
+
+
 
 const app = express(); // ✅ Declare app first
 
@@ -18,6 +21,8 @@ app.use(express.json());
 app.use('/api/upload', uploadRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/userdata", userDataRoutes);
+app.use("/api/forum", forumRoutes);
+
 
 // Get current user
 app.get("/api/auth/me", verifyToken, async (req, res) => {
