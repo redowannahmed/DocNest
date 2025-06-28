@@ -1,6 +1,34 @@
+import { useState, useEffect } from "react";
 import "../css/DoctorDashboard.css";
 
 export default function DoctorDashboard({ user }) {
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState({ title: "", content: "" });
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    fetch("/api/forum", {
+      headers: { Authorization: token },
+    })
+      .then(res => res.json())
+      .then(setPosts);
+  }, [token]);
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/forum", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify(newPost),
+    });
+    const data = await res.json();
+    setPosts([data, ...posts]);
+    setNewPost({ title: "", content: "" });
+  };
+
   return (
     <div className="doctor-dashboard">
       <header className="doctor-header">
@@ -10,8 +38,38 @@ export default function DoctorDashboard({ user }) {
 
       <section className="community-forum">
         <h2>Community Forum</h2>
-        <div className="forum-placeholder">
-          <p>Coming Soon: Share posts, comment, and discuss with fellow doctors!</p>
+
+        <form onSubmit={handleCreatePost} className="forum-form">
+          <input
+            placeholder="Post Title"
+            value={newPost.title}
+            onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+            required
+          />
+          <textarea
+            placeholder="What's on your mind?"
+            value={newPost.content}
+            onChange={e => setNewPost({ ...newPost, content: e.target.value })}
+            required
+          />
+          <button type="submit">Post</button>
+        </form>
+
+        <div className="forum-posts">
+          {posts.map(post => (
+            <div key={post._id} className="forum-post">
+              <h3>{post.title}</h3>
+              <p>{post.content}</p>
+              <small>By Dr. {post.author.name}</small>
+              <div className="forum-comments">
+                {post.comments.map(comment => (
+                  <div key={comment._id} className="forum-comment">
+                    <strong>Dr. {comment.author.name}:</strong> {comment.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
