@@ -47,8 +47,10 @@ export default function QuickActions({ onAddRecord }) {
           reason: recordData.reason,
           notes: recordData.notes,
           status: recordData.status,
-          prescriptionImgs: recordData.prescriptions.map((file) => file.url),
-          testReports: recordData.testReports.map((file) => file.url),
+          // Change from prescriptions to prescriptionImgs
+          prescriptionImgs: recordData.prescriptionImgs,
+          // Keep testReports as it matches both components
+          testReports: recordData.testReports,
         }),
       })
 
@@ -58,7 +60,6 @@ export default function QuickActions({ onAddRecord }) {
 
       const newRecord = await response.json()
 
-      // Call the parent callback to update the medical history
       if (onAddRecord) {
         onAddRecord(newRecord)
       }

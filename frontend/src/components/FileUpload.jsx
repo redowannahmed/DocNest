@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import "../css/FileUpload.css"
 
 export default function FileUpload({
@@ -9,6 +9,7 @@ export default function FileUpload({
   maxFiles = 5,
   label = "Upload Files",
   accept = "image/*",
+  initialFiles = [],
 }) {
   const [uploading, setUploading] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState([])
@@ -16,12 +17,36 @@ export default function FileUpload({
   const fileInputRef = useRef(null)
   const token = localStorage.getItem("token")
 
+  // Initialize uploaded files only once when initialFiles changes
+  useEffect(() => {
+    const normalizedInitialFiles = initialFiles || []
+    setUploadedFiles(normalizedInitialFiles)
+  }, [initialFiles]) // Include initialFiles dependency to initialize uploadedFiles
+
+  // Separate effect to handle initial files changes from parent
+  useEffect(() => {
+    if (initialFiles && initialFiles.length !== uploadedFiles.length) {
+      setUploadedFiles(initialFiles)
+    }
+  }, [initialFiles]) // Depend on initialFiles to avoid unnecessary updates
+
+  // Call parent callback when files change, but debounce it
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      onFilesUploaded(uploadedFiles)
+    }, 100) // Small debounce to prevent rapid calls
+
+    return () => clearTimeout(timeoutId)
+  }, [uploadedFiles]) // Remove onFilesUploaded from dependencies
+
   const handleFiles = async (files) => {
     if (!files || files.length === 0) return
 
     const fileArray = Array.from(files)
-    if (fileArray.length > maxFiles) {
-      alert(`Maximum ${maxFiles} files allowed`)
+    const totalFiles = uploadedFiles.length + fileArray.length
+
+    if (totalFiles > maxFiles) {
+      alert(`Maximum ${maxFiles} files allowed. You currently have ${uploadedFiles.length} files.`)
       return
     }
 
@@ -38,7 +63,7 @@ export default function FileUpload({
       })
 
       if (uploadType === "test-report") {
-        formData.append("reportType", "Other") // Can be made dynamic
+        formData.append("reportType", "Other")
       }
 
       const endpoint = uploadType === "prescription" ? "/api/upload/prescription" : "/api/upload/test-report"
@@ -57,8 +82,17 @@ export default function FileUpload({
         throw new Error(data.message || "Upload failed")
       }
 
-      setUploadedFiles((prev) => [...prev, ...data.files])
-      onFilesUploaded(data.files)
+      // Add new files to existing uploaded files
+      setUploadedFiles((prev) => {
+        const newFiles = [...prev, ...data.files]
+        console.log("Updated uploaded files:", newFiles)
+        return newFiles
+      })
+
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
     } catch (error) {
       console.error("Upload error:", error)
       alert("Upload failed: " + error.message)
@@ -95,19 +129,30 @@ export default function FileUpload({
 
   const removeFile = async (fileIndex, publicId) => {
     try {
-      if (publicId) {
+      if (publicId && publicId !== "unknown") {
         await fetch(`/api/upload/image/${publicId}`, {
           method: "DELETE",
           headers: { Authorization: token },
         })
       }
 
-      const newFiles = uploadedFiles.filter((_, index) => index !== fileIndex)
-      setUploadedFiles(newFiles)
-      onFilesUploaded(newFiles)
+      setUploadedFiles((prev) => {
+        const newFiles = prev.filter((_, index) => index !== fileIndex)
+        console.log("Files after removal:", newFiles)
+        return newFiles
+      })
     } catch (error) {
       console.error("Error removing file:", error)
+      // Still remove from UI even if server deletion fails
+      setUploadedFiles((prev) => prev.filter((_, index) => index !== fileIndex))
     }
+  }
+
+  // Function to get image URL from different data structures
+  const getImageUrl = (file) => {
+    if (typeof file === "string") return file
+    if (file && typeof file === "object" && file.url) return file.url
+    return "/placeholder.svg"
   }
 
   return (
@@ -118,7 +163,7 @@ export default function FileUpload({
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => !uploading && fileInputRef.current?.click()}
       >
         <input
           ref={fileInputRef}
@@ -127,6 +172,7 @@ export default function FileUpload({
           accept={accept}
           onChange={handleInputChange}
           style={{ display: "none" }}
+          disabled={uploading}
         />
 
         <div className="upload-content">
@@ -140,7 +186,10 @@ export default function FileUpload({
               <div className="upload-icon">📁</div>
               <p className="upload-text">{label}</p>
               <p className="upload-subtext">Drag & drop files here or click to browse</p>
-              <p className="upload-limit">Max {maxFiles} files, JPG/PNG only</p>
+              <p className="upload-limit">
+                Max {maxFiles} files, JPG/PNG only
+                {uploadedFiles.length > 0 && ` (${uploadedFiles.length}/${maxFiles} uploaded)`}
+              </p>
             </>
           )}
         </div>
@@ -151,14 +200,19 @@ export default function FileUpload({
           <h4>Uploaded Files:</h4>
           <div className="files-grid">
             {uploadedFiles.map((file, index) => (
-              <div key={index} className="uploaded-file">
-                <img src={file.url || "/placeholder.svg"} alt="Uploaded" className="file-thumbnail" />
+              <div key={`${index}-${file.publicId || file.url}`} className="uploaded-file">
+                <img
+                  src={getImageUrl(file) || "/placeholder.svg"}
+                  alt={`Uploaded file ${index + 1}`}
+                  className="file-thumbnail"
+                />
                 <button
                   className="remove-file"
                   onClick={(e) => {
                     e.stopPropagation()
                     removeFile(index, file.publicId)
                   }}
+                  disabled={uploading}
                 >
                   ×
                 </button>

@@ -3,28 +3,29 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require("./routes/authRoutes");
 const userDataRoutes = require("./routes/userDataRoutes");
 const forumRoutes = require("./routes/forumRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 const { verifyToken } = require("./middleware/authMiddleware");
 const User = require("./models/User");
 
 
-
-const app = express(); // ✅ Declare app first
-
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Then use routes
-app.use('/api/upload', uploadRoutes);
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.log(err));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/userdata", userDataRoutes);
 app.use("/api/forum", forumRoutes);
+app.use("/api/upload", uploadRoutes);
 
 
-// Get current user
+// Add route to get current user info
 app.get("/api/auth/me", verifyToken, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
@@ -46,10 +47,6 @@ app.put("/api/auth/me", verifyToken, async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

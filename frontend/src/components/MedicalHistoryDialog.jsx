@@ -1,23 +1,40 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import FileUpload from "./FileUpload"
 import "../css/MedicalHistoryDialog.css"
 
 export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingVisit = null }) {
   const [formData, setFormData] = useState({
-    date: editingVisit?.date?.slice(0, 10) || "",
-    doctor: editingVisit?.doctor || "",
-    specialty: editingVisit?.specialty || "",
-    reason: editingVisit?.reason || "",
-    notes: editingVisit?.notes || "",
-    status: editingVisit?.status || "Completed",
-    prescriptions: editingVisit?.prescriptions || [],
-    testReports: editingVisit?.testReports || [],
+    date: "",
+    doctor: "",
+    specialty: "",
+    reason: "",
+    notes: "",
+    status: "Completed",
+    prescriptionImgs: [],
+    testReports: [],
   })
 
   const [activeTab, setActiveTab] = useState("basic")
   const [saving, setSaving] = useState(false)
+
+  // Initialize form data when dialog opens or editingVisit changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        date: editingVisit?.date?.slice(0, 10) || "",
+        doctor: editingVisit?.doctor || "",
+        specialty: editingVisit?.specialty || "",
+        reason: editingVisit?.reason || "",
+        notes: editingVisit?.notes || "",
+        status: editingVisit?.status || "Completed",
+        prescriptionImgs: editingVisit?.prescriptionImgs || [],
+        testReports: editingVisit?.testReports || [],
+      })
+      setActiveTab("basic")
+    }
+  }, [isOpen, editingVisit])
 
   const specialties = [
     "General Practice",
@@ -43,17 +60,20 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
     }))
   }
 
+  // Simplified file upload handlers
   const handlePrescriptionUpload = (files) => {
+    console.log("Prescription files received:", files)
     setFormData((prev) => ({
       ...prev,
-      prescriptions: [...prev.prescriptions, ...files],
+      prescriptionImgs: files || [], // Ensure it's always an array
     }))
   }
 
   const handleTestReportUpload = (files) => {
+    console.log("Test report files received:", files)
     setFormData((prev) => ({
       ...prev,
-      testReports: [...prev.testReports, ...files],
+      testReports: files || [], // Ensure it's always an array
     }))
   }
 
@@ -62,8 +82,16 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
     setSaving(true)
 
     try {
-      await onSave(formData)
-      onClose()
+      // Ensure arrays are properly formatted before sending
+      const submitData = {
+        ...formData,
+        prescriptionImgs: Array.isArray(formData.prescriptionImgs) ? formData.prescriptionImgs : [],
+        testReports: Array.isArray(formData.testReports) ? formData.testReports : [],
+      }
+
+      console.log("Submitting form data:", submitData)
+      await onSave(submitData)
+      handleClose()
     } catch (error) {
       console.error("Error saving visit:", error)
       alert("Error saving visit: " + error.message)
@@ -72,14 +100,29 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
     }
   }
 
+  const handleClose = () => {
+    setFormData({
+      date: "",
+      doctor: "",
+      specialty: "",
+      reason: "",
+      notes: "",
+      status: "Completed",
+      prescriptionImgs: [],
+      testReports: [],
+    })
+    setActiveTab("basic")
+    onClose()
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="dialog-overlay" onClick={onClose}>
+    <div className="dialog-overlay" onClick={handleClose}>
       <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
         <div className="dialog-header">
           <h2>{editingVisit ? "Edit Medical Visit" : "Add New Medical Visit"}</h2>
-          <button className="dialog-close" onClick={onClose}>
+          <button className="dialog-close" onClick={handleClose}>
             ×
           </button>
         </div>
@@ -95,13 +138,13 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
             className={`tab-button ${activeTab === "prescriptions" ? "active" : ""}`}
             onClick={() => setActiveTab("prescriptions")}
           >
-            💊 Prescriptions
+            💊 Prescriptions {formData.prescriptionImgs.length > 0 && `(${formData.prescriptionImgs.length})`}
           </button>
           <button
             className={`tab-button ${activeTab === "reports" ? "active" : ""}`}
             onClick={() => setActiveTab("reports")}
           >
-            📊 Test Reports
+            📊 Test Reports {formData.testReports.length > 0 && `(${formData.testReports.length})`}
           </button>
         </div>
 
@@ -185,6 +228,7 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
                   onFilesUploaded={handlePrescriptionUpload}
                   label="Upload Prescription Images"
                   maxFiles={5}
+                  initialFiles={formData.prescriptionImgs}
                 />
               </div>
             </div>
@@ -200,13 +244,14 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
                   onFilesUploaded={handleTestReportUpload}
                   label="Upload Test Report Images"
                   maxFiles={5}
+                  initialFiles={formData.testReports}
                 />
               </div>
             </div>
           )}
 
           <div className="dialog-actions">
-            <button type="button" className="btn-secondary" onClick={onClose}>
+            <button type="button" className="btn-secondary" onClick={handleClose} disabled={saving}>
               Cancel
             </button>
             <button type="submit" className="btn-primary" disabled={saving}>

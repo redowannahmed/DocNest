@@ -5,6 +5,7 @@ import "../css/MedicalHistory.css"
 
 export default function MedicalHistory({ user, medicalHistory = [], setMedicalHistory }) {
   const [expandedId, setExpandedId] = useState(null)
+  const [imageModal, setImageModal] = useState({ isOpen: false, src: "", alt: "" })
 
   // Mock data to match the design if no real data
   const mockVisits = [
@@ -55,6 +56,27 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
     })
   }
 
+  // Function to get image URL from different data structures
+  const getImageUrl = (img) => {
+    if (typeof img === 'string') return img
+    if (img && typeof img === 'object' && img.url) return img.url
+    return "/placeholder.svg?height=100&width=100"
+  }
+
+  // Function to open image in modal
+  const openImageModal = (imageUrl, altText) => {
+    setImageModal({
+      isOpen: true,
+      src: imageUrl,
+      alt: altText
+    })
+  }
+
+  // Function to close image modal
+  const closeImageModal = () => {
+    setImageModal({ isOpen: false, src: "", alt: "" })
+  }
+
   return (
     <div className="medical-history">
       <div className="search-container">
@@ -92,16 +114,20 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
                   <strong>Prescriptions:</strong>
                   <div className="files-grid">
                     {visit.prescriptionImgs?.length > 0 ? (
-                      visit.prescriptionImgs.map((img, i) => (
-                        <div key={i} className="file-item">
-                          <img
-                            src={img || "/placeholder.svg?height=100&width=100"}
-                            alt={`Prescription ${i + 1}`}
-                            className="file-thumbnail"
-                            onClick={() => window.open(img, "_blank")}
-                          />
-                        </div>
-                      ))
+                      visit.prescriptionImgs.map((img, i) => {
+                        const imageUrl = getImageUrl(img)
+                        return (
+                          <div key={i} className="file-item">
+                            <img
+                              src={imageUrl}
+                              alt={`Prescription ${i + 1}`}
+                              className="file-thumbnail"
+                              onClick={() => openImageModal(imageUrl, `Prescription ${i + 1}`)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          </div>
+                        )
+                      })
                     ) : (
                       <p className="no-files">No prescriptions uploaded</p>
                     )}
@@ -112,16 +138,20 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
                   <strong>Test Reports:</strong>
                   <div className="files-grid">
                     {visit.testReports?.length > 0 ? (
-                      visit.testReports.map((img, i) => (
-                        <div key={i} className="file-item">
-                          <img
-                            src={img || "/placeholder.svg?height=100&width=100"}
-                            alt={`Test Report ${i + 1}`}
-                            className="file-thumbnail"
-                            onClick={() => window.open(img, "_blank")}
-                          />
-                        </div>
-                      ))
+                      visit.testReports.map((img, i) => {
+                        const imageUrl = getImageUrl(img)
+                        return (
+                          <div key={i} className="file-item">
+                            <img
+                              src={imageUrl}
+                              alt={`Test Report ${i + 1}`}
+                              className="file-thumbnail"
+                              onClick={() => openImageModal(imageUrl, `Test Report ${i + 1}`)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          </div>
+                        )
+                      })
                     ) : (
                       <p className="no-files">No test reports uploaded</p>
                     )}
@@ -132,6 +162,23 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
           </div>
         ))}
       </div>
+
+      {/* Image Modal */}
+      {imageModal.isOpen && (
+        <div className="image-modal-overlay" onClick={closeImageModal}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="image-modal-close" onClick={closeImageModal}>
+              ×
+            </button>
+            <img
+              src={imageModal.src}
+              alt={imageModal.alt}
+              className="image-modal-img"
+            />
+            <p className="image-modal-caption">{imageModal.alt}</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
