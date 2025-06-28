@@ -1,8 +1,8 @@
 .landing-container {
   min-height: 100vh;
-  background-color: #f9fafb; /* softer neutral gray */
-  color: #1e293b; /* modern dark slate */
-  font-family: 'Inter', sans-serif;
+  background: F5F8FF;
+  color: #1e293b;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   padding-top: 4rem;
   display: flex;
   flex-direction: column;
@@ -11,10 +11,17 @@
 }
 
 .landing-content {
-  padding: 3rem 1.5rem;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  max-width: 60rem;
+  gap: 2rem;
+  max-width: 75rem;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .landing-content {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
 }

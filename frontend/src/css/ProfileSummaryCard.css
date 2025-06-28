@@ -1,18 +1,23 @@
 .profile-summary-card {
-  margin-top: 1.5rem;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
   border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  font-family: 'Inter', sans-serif;
-  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .profile-content {
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 1.5rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.profile-avatar-section {
+  display: flex;
   align-items: center;
 }
 
@@ -26,19 +31,25 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: #C6EBBE;
+  background: linear-gradient(135deg, #f1c40f, #f39c12);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1e293b;
+  color: white;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.125rem;
+  border: 2px solid rgba(241, 196, 15, 0.3);
+}
+
+.avatar-initials {
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .status-indicator {
   position: absolute;
-  bottom: 0.2rem;
-  right: 0.2rem;
+  bottom: 0;
+  right: 0;
   width: 0.75rem;
   height: 0.75rem;
   background-color: #10b981;
@@ -47,92 +58,113 @@
 }
 
 .profile-info-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex: 1;
+  margin-left: 1rem;
 }
 
 .profile-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
 }
 
 .profile-name {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #2c3e50;
   margin: 0;
-}
-
-.profile-badge {
-  background-color: #C6EBBE;
-  color: #1e293b;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
 }
 
 .profile-details {
   display: flex;
+  align-items: center;
+  gap: 1rem;
   flex-wrap: wrap;
-  gap: 0.75rem;
 }
 
 .detail-item {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.detail-text {
   color: #64748b;
 }
 
 .profile-actions {
   display: flex;
+  align-items: center;
+}
+
+.edit-button,
+.save-button,
+.cancel-button {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #64748b;
+}
+
+.edit-button:hover,
+.save-button:hover {
+  background: #f1f5f9;
+  color: #2c3e50;
+  border-color: #cbd5e1;
+}
+
+.save-button {
+  background: #f1c40f;
+  color: white;
+  border-color: #f1c40f;
+}
+
+.save-button:hover {
+  background: #f39c12;
+  border-color: #f39c12;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 200px;
+}
+
+.input-field {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.15s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #f1c40f;
+  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.1);
+}
+
+.button-group {
+  display: flex;
   gap: 0.5rem;
 }
 
-.edit-button {
-  background-color: #C6EBBE;
-  color: #1e293b;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.edit-button:hover {
-  background-color: #a4d9a5;
-}
-
-.share-button {
-  background-color: transparent;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.share-button:hover {
-  background-color: #f9fafb;
-  color: #1e293b;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .profile-content {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     text-align: center;
+    gap: 1.5rem;
   }
 
-  .profile-header,
-  .profile-details,
-  .profile-actions {
+  .profile-info-section {
+    margin-left: 0;
+  }
+
+  .profile-details {
     justify-content: center;
   }
 }
