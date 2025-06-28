@@ -107,6 +107,28 @@ section h2 {
   font-size: 0.9rem;
 }
 
+.comment-form {
+  display: flex;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+}
+
+.comment-form button {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
 .appointments-list,
 .past-patients-list {
   list-style: none;

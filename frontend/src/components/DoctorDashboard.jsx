@@ -28,6 +28,26 @@ export default function DoctorDashboard({ user }) {
     setPosts([data, ...posts]);
     setNewPost({ title: "", content: "" });
   };
+  const handleAddComment = async (e, postId) => {
+    e.preventDefault();
+    const text = commentInputs[postId];
+    if (!text) return;
+
+    const res = await fetch(`/api/forum/${postId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify({ text }),
+    });
+
+    const updatedPost = await res.json();
+    setPosts(posts.map(p => p._id === updatedPost._id ? updatedPost : p));
+    setCommentInputs({ ...commentInputs, [postId]: "" });
+  };
+
+  const [commentInputs, setCommentInputs] = useState({});
 
   return (
     <div className="doctor-dashboard">
@@ -61,6 +81,7 @@ export default function DoctorDashboard({ user }) {
               <h3>{post.title}</h3>
               <p>{post.content}</p>
               <small>By Dr. {post.author.name}</small>
+
               <div className="forum-comments">
                 {post.comments.map(comment => (
                   <div key={comment._id} className="forum-comment">
@@ -68,6 +89,19 @@ export default function DoctorDashboard({ user }) {
                   </div>
                 ))}
               </div>
+
+              <form onSubmit={e => handleAddComment(e, post._id)} className="comment-form">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  value={commentInputs[post._id] || ""}
+                  onChange={e =>
+                    setCommentInputs({ ...commentInputs, [post._id]: e.target.value })
+                  }
+                  required
+                />
+                <button type="submit">Comment</button>
+              </form>
             </div>
           ))}
         </div>
