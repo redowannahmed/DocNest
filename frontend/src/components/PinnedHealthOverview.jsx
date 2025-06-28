@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import "../css/PinnedHealthOverview.css";
-import React, { useState } from "react";
 
 export default function PinnedHealthOverview({ user, pinnedConditions = [], setPinnedConditions, medications = [], setMedications }) {
   const [conditionForm, setConditionForm] = useState({ name: "", severity: "", icon: "" });
@@ -8,6 +8,24 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
   const [showMedicationModal, setShowMedicationModal] = useState(false);
 
   const token = localStorage.getItem("token");
+
+  // Fetch user's conditions and medications on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      if (token) {
+        const [condRes, medRes] = await Promise.all([
+          fetch("/api/userdata/pinned-conditions", { headers: { Authorization: token } }),
+          fetch("/api/userdata/medications", { headers: { Authorization: token } }),
+        ]);
+        const condData = await condRes.json();
+        const medData = await medRes.json();
+        setPinnedConditions(condData || []);
+        setMedications(medData || []);
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line
+  }, [token]);
 
   const addCondition = async (e) => {
     e.preventDefault();
@@ -37,88 +55,82 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
 
   return (
     <div className="health-overview-container">
-      <div className="health-overview-header">
-        <h2 className="overview-title">Health Overview</h2>
-      </div>
       <div className="health-cards-grid">
         {/* Chronic Conditions Card */}
         <div className="health-card conditions-card">
           <div className="card-header">
             <div className="card-title">
-              <div className="title-icon">🧀</div>
+              <div className="title-icon">📈</div>
               <h3>Chronic Conditions</h3>
             </div>
-            <div className="card-badge">
-              <span className="badge-count">{pinnedConditions.length}</span>
-            </div>
-          </div>
-          <div className="card-content">
-            <div className="conditions-list">
-              {pinnedConditions.map((condition, idx) => (
-                <div key={idx} className="condition-item">
-                  <div className="condition-info">
-                    <div className="condition-icon">{condition.icon}</div>
-                    <div className="condition-details">
-                      <div className="condition-name">{condition.name}</div>
-                      <div className={`condition-status status-${condition.severity}`}>
-                        {condition.severity}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="condition-indicator">
-                    <div className={`status-dot ${condition.severity}`}></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="card-footer">
             <button 
-              className="add-condition-btn"
+              className="add-btn conditions-add-btn"
               onClick={() => setShowConditionModal(true)}
               type="button"
             >
               <span className="btn-icon">+</span>
-              Add Chronic Condition
+              Add
             </button>
           </div>
+          <div className="card-content">
+            <div className="conditions-list">
+              {pinnedConditions.length === 0 ? (
+                <div className="empty-state">No conditions added yet.</div>
+              ) : (
+                pinnedConditions.map((condition, idx) => (
+                  <div key={idx} className="condition-item">
+                    <div className="condition-info">
+                      <div className="condition-details">
+                        <div className="condition-name">{condition.name}</div>
+                        <div className="condition-date">{condition.since ? `Since ${condition.since}` : ""}</div>
+                      </div>
+                    </div>
+                    <div className="condition-status-badge">
+                      <span className={`status-badge status-${condition.severity?.toLowerCase()}`}>
+                        {condition.severity}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
+
         {/* Medications Card */}
         <div className="health-card medications-card">
           <div className="card-header">
             <div className="card-title">
               <div className="title-icon">💊</div>
-              <h3>Medications</h3>
+              <h3>Current Medications</h3>
             </div>
-            <div className="card-badge">
-              <span className="badge-count">{medications.length}</span>
-            </div>
-          </div>
-          <div className="card-content">
-            <div className="medications-list">
-              {medications.map((med, idx) => (
-                <div key={idx} className="medication-item">
-                  <div className="medication-info">
-                    <div className="medication-icon">{med.icon}</div>
-                    <div className="medication-details">
-                      <div className="medication-name">{med.name}</div>
-                      <div className="medication-dosage">{med.dosage}</div>
-                      <div className="medication-frequency">{med.frequency}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="card-footer">
             <button 
-              className="add-medication-btn"
+              className="add-btn medications-add-btn"
               onClick={() => setShowMedicationModal(true)}
               type="button"
             >
               <span className="btn-icon">+</span>
-              Add Medication
+              Add
             </button>
+          </div>
+          <div className="card-content">
+            <div className="medications-list">
+              {medications.length === 0 ? (
+                <div className="empty-state">No medications added yet.</div>
+              ) : (
+                medications.map((med, idx) => (
+                  <div key={idx} className="medication-item">
+                    <div className="medication-info">
+                      <div className="medication-details">
+                        <div className="medication-name">{med.name}</div>
+                        <div className="medication-dosage">{med.dosage} • {med.frequency}</div>
+                        <div className="medication-date">{med.since ? `Since ${med.since}` : ""}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -156,7 +168,7 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                 >
                   <option value="">Select severity</option>
                   <option value="mild">Mild</option>
-                  <option value="controlled">Controlled</option>
+                  <option value="moderate">Moderate</option>
                   <option value="severe">Severe</option>
                 </select>
               </div>

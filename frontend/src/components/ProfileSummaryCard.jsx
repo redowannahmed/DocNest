@@ -1,3 +1,4 @@
+// ProfileSummaryCard.jsx
 import "../css/ProfileSummaryCard.css";
 import React, { useState } from "react";
 
@@ -31,9 +32,7 @@ export default function ProfileSummaryCard({ user, setUser }) {
           <div className="profile-avatar">
             <div className="avatar-image">
               <span className="avatar-initials">
-                {user.name
-                  ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
-                  : ""}
+                {user.name ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase() : ""}
               </span>
             </div>
             <div className="status-indicator"></div>
@@ -45,9 +44,7 @@ export default function ProfileSummaryCard({ user, setUser }) {
           </div>
           <div className="profile-details">
             <div className="detail-item">
-              <span className="detail-text">
-                {user.age ? user.age + " years old" : ""}
-              </span>
+              <span className="detail-text">{user.age ? user.age + " years old" : ""}</span>
             </div>
             <div className="detail-item">
               <span className="detail-text">{user.gender}</span>
@@ -61,41 +58,33 @@ export default function ProfileSummaryCard({ user, setUser }) {
           {editMode ? (
             <form onSubmit={handleSave} className="edit-form">
               <input
+                className="input-field"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
               />
               <input
+                className="input-field"
                 value={form.age}
                 onChange={(e) => setForm({ ...form, age: e.target.value })}
               />
               <input
+                className="input-field"
                 value={form.gender}
-                onChange={(e) =>
-                  setForm({ ...form, gender: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, gender: e.target.value })}
               />
               <input
+                className="input-field"
                 value={form.location}
-                onChange={(e) =>
-                  setForm({ ...form, location: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
-              <button type="submit">Save</button>
-              <button
-                type="button"
-                onClick={() => setEditMode(false)}
-              >
-                Cancel
-              </button>
+              <div className="button-group">
+                <button className="save-button" type="submit">Save</button>
+                <button className="cancel-button" type="button" onClick={() => setEditMode(false)}>Cancel</button>
+              </div>
             </form>
           ) : (
-            <button
-              className="edit-button"
-              onClick={() => setEditMode(true)}
-            >
+            <button className="edit-button" onClick={() => setEditMode(true)}>
               <span>Edit Profile</span>
             </button>
           )}
