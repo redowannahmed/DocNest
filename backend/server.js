@@ -5,8 +5,10 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const userDataRoutes = require("./routes/userDataRoutes");
+const forumRoutes = require("./routes/forumRoutes");
 const { verifyToken } = require("./middleware/authMiddleware");
 const User = require("./models/User");
+
 
 const app = express();
 app.use(cors());
@@ -18,6 +20,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use("/api/auth", authRoutes);
 app.use("/api/userdata", userDataRoutes);
+app.use("/api/forum", forumRoutes);
+
 
 // Add route to get current user info
 app.get("/api/auth/me", verifyToken, async (req, res) => {
