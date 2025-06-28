@@ -8,6 +8,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Landing from "./components/Landing";
+import DoctorDashboard from "./components/DoctorDashboard";
+
 
 function AppRouter() {
   const [user, setUser] = useState(() => {
@@ -17,11 +19,17 @@ function AppRouter() {
   const navigate = useNavigate();
 
   const handleLogin = (userData, token) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", token);
+  setUser(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
+  localStorage.setItem("token", token);
+
+  if (userData.selectedRole === "doctor") {
+    navigate("/doctor");
+  } else {
     navigate("/");
-  };
+  }
+};
+
   const handleRegister = (userData, token) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -34,6 +42,7 @@ function AppRouter() {
       <Route path="/signin" element={<SignIn onLogin={handleLogin} />} />
       <Route path="/signup" element={<SignUp onRegister={handleRegister} />} />
       <Route path="/" element={<Landing user={user} setUser={setUser} />} />
+      <Route path="/doctor" element={<DoctorDashboard user={user} />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

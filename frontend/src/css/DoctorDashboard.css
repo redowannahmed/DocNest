@@ -1,0 +1,59 @@
+.doctor-dashboard {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+}
+
+.doctor-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.doctor-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.doctor-header p {
+  color: #475569;
+}
+
+section {
+  background: #f9fafb;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #0f172a;
+}
+
+.forum-placeholder {
+  padding: 2rem;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.appointments-list,
+.past-patients-list {
+  list-style: none;
+  padding: 0;
+}
+
+.appointments-list li,
+.past-patients-list li {
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
