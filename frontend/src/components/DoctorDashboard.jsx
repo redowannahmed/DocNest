@@ -80,7 +80,7 @@ export default function DoctorDashboard({ user }) {
             <div key={post._id} className="forum-post">
               <h3>{post.title}</h3>
               <p>{post.content}</p>
-              <small>By Dr. {post.author.name}</small>
+              <small className="post-author">By Dr. {post.author.name}</small>
 
               <div className="forum-comments">
                 {post.comments.map(comment => (
@@ -107,23 +107,13 @@ export default function DoctorDashboard({ user }) {
         </div>
       </section>
 
-      <section className="appointments-today">
-        <h2>Today's Appointments</h2>
-        <ul className="appointments-list">
-          <li>Patient 1</li>
-          <li>Patient 2</li>
-          <li>Patient 3</li>
-        </ul>
+      <section className="profile-access">
+        <h2>Ask for Patient Profile Access</h2>
+        <div className="coming-soon">
+          <p>Coming soon... Doctors will be able to request patient profiles here.</p>
+        </div>
       </section>
 
-      <section className="past-patients">
-        <h2>Past Patients</h2>
-        <ul className="past-patients-list">
-          <li>John Doe</li>
-          <li>Jane Smith</li>
-          <li>Michael Johnson</li>
-        </ul>
-      </section>
     </div>
   );
 }
