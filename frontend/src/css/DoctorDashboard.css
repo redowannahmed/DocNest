@@ -17,10 +17,9 @@
   background: linear-gradient(135deg, #3b82f6, #60a5fa);
   background-clip: text;
   -webkit-background-clip: text;
+  color: transparent;
   -webkit-text-fill-color: transparent;
-  color: transparent; /* standard fallback */
 }
-
 
 .doctor-header p {
   color: #475569;
@@ -78,14 +77,35 @@ section h2 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-height: 600px; /* adjust to show about 3 posts */
+  overflow-y: auto;
+  padding-right: 0.5rem; /* space for scrollbar */
+}
+
+.forum-posts::-webkit-scrollbar {
+  width: 8px;
+}
+
+.forum-posts::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
 }
 
 .forum-post {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #3b82f6; /* Tailwind blue-500 */
   border-radius: 0.75rem;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.forum-post:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-color: #2563eb; /* Tailwind blue-600 */
+}
+
 
 .forum-post h3 {
   margin: 0 0 0.5rem;
@@ -96,15 +116,40 @@ section h2 {
   margin: 0 0 0.5rem;
 }
 
+.post-author {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #3b82f6; /* Highlight doctor name */
+}
+
+.post-date {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
 .forum-comments {
-  margin-top: 0.75rem;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 0.5rem;
+  margin-top: 1rem;
+  border-top: 2px solid #cbd5e1; /* Clear separation */
+  padding-top: 0.75rem;
+  padding-left: 1rem; /* Indent comments */
 }
 
 .forum-comment {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  background: #f1f5f9; /* Light background for comment */
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.comment-time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
 }
 
 .comment-form {
@@ -129,24 +174,13 @@ section h2 {
   cursor: pointer;
 }
 
-.appointments-list,
-.past-patients-list {
-  list-style: none;
-  padding: 0;
-}
-
-.appointments-list li,
-.past-patients-list li {
-  padding: 0.75rem 1rem;
+/* New Ask for Patient Profile Access styling */
+.profile-access .coming-soon {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.appointments-list li:hover,
-.past-patients-list li:hover {
-  background: #dbeafe;
-  transform: translateX(4px);
+  border: 2px dashed #93c5fd;
+  border-radius: 0.75rem;
+  text-align: center;
+  color: #64748b;
+  padding: 2rem;
+  font-style: italic;
 }

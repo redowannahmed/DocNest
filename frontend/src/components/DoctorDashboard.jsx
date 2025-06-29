@@ -48,6 +48,17 @@ export default function DoctorDashboard({ user }) {
   };
 
   const [commentInputs, setCommentInputs] = useState({});
+  const timeAgo = (date) => {
+    const now = new Date();
+    const created = new Date(date);
+    const diffMs = now - created;
+    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHrs / 24);
+
+    if (diffHrs < 1) return "just now";
+    if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  };
 
   return (
     <div className="doctor-dashboard">
@@ -80,12 +91,17 @@ export default function DoctorDashboard({ user }) {
             <div key={post._id} className="forum-post">
               <h3>{post.title}</h3>
               <p>{post.content}</p>
-              <small>By Dr. {post.author.name}</small>
+              <small className="post-author">By Dr. {post.author.name}</small>
+              <br/>
+              <small className="post-date">
+                {new Date(post.createdAt).toLocaleString()}
+              </small>
 
               <div className="forum-comments">
                 {post.comments.map(comment => (
                   <div key={comment._id} className="forum-comment">
                     <strong>Dr. {comment.author.name}:</strong> {comment.text}
+                    <div className="comment-time">{timeAgo(comment.createdAt)}</div>
                   </div>
                 ))}
               </div>
@@ -107,23 +123,13 @@ export default function DoctorDashboard({ user }) {
         </div>
       </section>
 
-      <section className="appointments-today">
-        <h2>Today's Appointments</h2>
-        <ul className="appointments-list">
-          <li>Patient 1</li>
-          <li>Patient 2</li>
-          <li>Patient 3</li>
-        </ul>
+      <section className="profile-access">
+        <h2>Ask for Patient Profile Access</h2>
+        <div className="coming-soon">
+          <p>Coming soon... Doctors will be able to request patient profiles here.</p>
+        </div>
       </section>
 
-      <section className="past-patients">
-        <h2>Past Patients</h2>
-        <ul className="past-patients-list">
-          <li>John Doe</li>
-          <li>Jane Smith</li>
-          <li>Michael Johnson</li>
-        </ul>
-      </section>
     </div>
   );
 }
