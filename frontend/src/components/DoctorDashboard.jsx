@@ -81,6 +81,10 @@ export default function DoctorDashboard({ user }) {
               <h3>{post.title}</h3>
               <p>{post.content}</p>
               <small className="post-author">By Dr. {post.author.name}</small>
+              <br/>
+              <small className="post-date">
+                {new Date(post.createdAt).toLocaleString()}
+              </small>
 
               <div className="forum-comments">
                 {post.comments.map(comment => (
