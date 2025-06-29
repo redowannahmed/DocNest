@@ -48,6 +48,17 @@ export default function DoctorDashboard({ user }) {
   };
 
   const [commentInputs, setCommentInputs] = useState({});
+  const timeAgo = (date) => {
+    const now = new Date();
+    const created = new Date(date);
+    const diffMs = now - created;
+    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHrs / 24);
+
+    if (diffHrs < 1) return "just now";
+    if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  };
 
   return (
     <div className="doctor-dashboard">
@@ -90,6 +101,7 @@ export default function DoctorDashboard({ user }) {
                 {post.comments.map(comment => (
                   <div key={comment._id} className="forum-comment">
                     <strong>Dr. {comment.author.name}:</strong> {comment.text}
+                    <div className="comment-time">{timeAgo(comment.createdAt)}</div>
                   </div>
                 ))}
               </div>
