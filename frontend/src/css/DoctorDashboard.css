@@ -77,9 +77,9 @@ section h2 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-height: 600px; /* adjust to show about 3 posts */
+  max-height: 660px; /* ✅ 3 posts worth of height with spacing */
   overflow-y: auto;
-  padding-right: 0.5rem; /* space for scrollbar */
+  padding-right: 0.5rem;
 }
 
 .forum-posts::-webkit-scrollbar {
@@ -91,21 +91,29 @@ section h2 {
   border-radius: 4px;
 }
 
+.forum-post.expanded {
+  height: auto; /* ✅ removes height limit when expanded */
+  overflow: visible;
+}
+
 .forum-post {
   background: #ffffff;
-  border: 2px solid #3b82f6; /* Tailwind blue-500 */
+  border: 2px solid #3b82f6;
   border-radius: 0.75rem;
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  max-width: 100%;
+  height: 200px; /* ✅ fixed height */
+  overflow: hidden; /* ✅ hide overflow by default */
+  position: relative;
 }
 
 .forum-post:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border-color: #2563eb; /* Tailwind blue-600 */
+  border-color: #2563eb;
 }
-
 
 .forum-post h3 {
   margin: 0 0 0.5rem;
@@ -129,6 +137,17 @@ section h2 {
   margin-top: 0.25rem;
   font-size: 0.75rem;
   color: #64748b;
+}
+
+.see-more-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
 }
 
 .forum-comments {

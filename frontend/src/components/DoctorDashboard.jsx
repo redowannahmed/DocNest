@@ -4,7 +4,9 @@ import "../css/DoctorDashboard.css";
 export default function DoctorDashboard({ user }) {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
+  const [expandedPosts, setExpandedPosts] = useState({});
   const token = localStorage.getItem("token");
+
 
   useEffect(() => {
     fetch("/api/forum", {
@@ -28,6 +30,7 @@ export default function DoctorDashboard({ user }) {
     setPosts([data, ...posts]);
     setNewPost({ title: "", content: "" });
   };
+
   const handleAddComment = async (e, postId) => {
     e.preventDefault();
     const text = commentInputs[postId];
@@ -47,7 +50,15 @@ export default function DoctorDashboard({ user }) {
     setCommentInputs({ ...commentInputs, [postId]: "" });
   };
 
+  const toggleExpand = (postId) => {
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
+
   const [commentInputs, setCommentInputs] = useState({});
+
   const timeAgo = (date) => {
     const now = new Date();
     const created = new Date(date);
@@ -88,9 +99,26 @@ export default function DoctorDashboard({ user }) {
 
         <div className="forum-posts">
           {posts.map(post => (
-            <div key={post._id} className="forum-post">
+            <div key={post._id} className={`forum-post ${expandedPosts[post._id] ? "expanded" : ""}`}>
               <h3>{post.title}</h3>
               <p>{post.content}</p>
+
+{!expandedPosts[post._id] ? (
+  <button
+    className="see-more-btn"
+    onClick={() => toggleExpand(post._id)}
+  >
+    See more
+  </button>
+) : (
+  <button
+    className="see-more-btn"
+    onClick={() => toggleExpand(post._id)}
+  >
+    Show less
+  </button>
+)}
+
               <small className="post-author">By Dr. {post.author.name}</small>
               <br/>
               <small className="post-date">
