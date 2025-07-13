@@ -76,11 +76,12 @@ section h2 {
 .forum-posts {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-height: 600px; /* adjust to show about 3 posts */
+  gap: 1.5rem;
+  max-height: 600px;  /* ✅ exactly 3 posts + gaps */
   overflow-y: auto;
-  padding-right: 0.5rem; /* space for scrollbar */
+  padding: 0.5rem;
 }
+
 
 .forum-posts::-webkit-scrollbar {
   width: 8px;
@@ -91,21 +92,31 @@ section h2 {
   border-radius: 4px;
 }
 
+.forum-post.expanded {
+  height: auto; /* ✅ removes height limit when expanded */
+  overflow: visible;
+}
+
 .forum-post {
   background: #ffffff;
-  border: 2px solid #3b82f6; /* Tailwind blue-500 */
+  border: 2px solid #3b82f6;
   border-radius: 0.75rem;
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  max-width: 100%;
+  height: 150px; /* ✅ fixed height */
+  overflow: hidden; /* ✅ hide overflow by default */
+  position: relative;
+  flex-shrink: 0;
+
 }
 
 .forum-post:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border-color: #2563eb; /* Tailwind blue-600 */
+  border-color: #2563eb;
 }
-
 
 .forum-post h3 {
   margin: 0 0 0.5rem;
@@ -114,7 +125,18 @@ section h2 {
 
 .forum-post p {
   margin: 0 0 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
+
+.forum-post.expanded p {
+  white-space: normal; /* allow multiple lines */
+  overflow: visible;
+  text-overflow: initial;
+}
+
+
 
 .post-author {
   display: inline-block;
@@ -130,6 +152,19 @@ section h2 {
   font-size: 0.75rem;
   color: #64748b;
 }
+
+.see-more-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  margin-left: -0.40rem;
+  background: none;
+  border: none;
+  color: #000; /* ✅ black */
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
 
 .forum-comments {
   margin-top: 1rem;
@@ -183,4 +218,88 @@ section h2 {
   color: #64748b;
   padding: 2rem;
   font-style: italic;
+}
+
+.comment-count {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.see-comments-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 41, 59, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-bottom: 0.5rem;
+}
+
+.modal p {
+  margin-bottom: 1rem;
+}
+
+.modal-comments {
+  border-top: 2px solid #cbd5e1;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.close-modal-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  background: #ef4444;
+  border: none;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.open-comments-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  border-radius: 1rem;
+  background-color: white;
+  border-color: #0ea5e9;
+  color: #0ea5e9;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
