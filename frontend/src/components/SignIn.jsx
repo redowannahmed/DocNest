@@ -1,15 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import "../css/SignIn.css"
 
 const SignIn = ({ onLogin }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [role, setRole] = useState("patient")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -17,8 +17,8 @@ const SignIn = ({ onLogin }) => {
     setError("")
 
     try {
-      // Make API call to your backend
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      // Make actual API call to your backend
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,9 +29,11 @@ const SignIn = ({ onLogin }) => {
       const data = await response.json()
 
       if (response.ok) {
-        // Call the parent login handler
-        onLogin(data.user, data.token)
-        // Navigation will be handled by the parent component
+        // Add the selected role to user data
+        const userData = { ...data.user, selectedRole: role }
+
+        // Call the parent login handler - this will handle navigation
+        onLogin(userData, data.token)
       } else {
         setError(data.message || "Login failed")
       }
@@ -43,63 +45,79 @@ const SignIn = ({ onLogin }) => {
   }
 
   return (
-    <div className="signin-container">
-      <div className="signin-card">
-        <div className="signin-header">
-          <Link to="/" className="back-to-home">
+    <div className="auth-container">
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "2rem" }}>
+          <Link
+            to="/"
+            style={{
+              color: "#667eea",
+              textDecoration: "none",
+              fontSize: "0.9rem",
+              fontWeight: "500",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              marginBottom: "1rem",
+            }}
+          >
             <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
           <h2>Welcome Back</h2>
-          <p>Sign in to access your medical records</p>
+          <p className="auth-subtitle">Sign in to access your medical records</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="signin-form">
-          {error && <div className="error-message">{error}</div>}
+        {error && <div className="error">{error}</div>}
 
-          <div className="input-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <button type="submit" className="signin-btn" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i>
-                Signing In...
-              </>
-            ) : (
-              <>
-                <i className="fas fa-sign-in-alt"></i>
-                Sign In
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="signin-footer">
-          <p>
-            Don't have an account? <Link to="/signup">Sign up here</Link>
-          </p>
+        <div className="input-group">
+          <i className="fas fa-envelope input-icon"></i>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="Enter your email"
+          />
         </div>
+
+        <div className="input-group">
+          <i className="fas fa-lock input-icon"></i>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <div className="input-group">
+          <i className="fas fa-user-md input-icon"></i>
+          <select value={role} onChange={(e) => setRole(e.target.value)} required className="role-select">
+            <option value="patient">Sign in as Patient</option>
+            <option value="doctor">Sign in as Doctor</option>
+          </select>
+        </div>
+
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <i className="fas fa-spinner fa-spin"></i>
+              Signing In...
+            </>
+          ) : (
+            <>
+              <i className="fas fa-sign-in-alt"></i>
+              Sign In
+            </>
+          )}
+        </button>
+      </form>
+
+      <div className="auth-links">
+        <p>
+          Don't have an account? <Link to="/signup">Sign up here</Link>
+        </p>
       </div>
     </div>
   )
