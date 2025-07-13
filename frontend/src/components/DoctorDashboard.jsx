@@ -5,7 +5,7 @@ export default function DoctorDashboard({ user }) {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [expandedPosts, setExpandedPosts] = useState({});
-  const [openComments, setOpenComments] = useState({});
+
 
   const token = localStorage.getItem("token");
   const [activePost, setActivePost] = useState(null);
@@ -78,12 +78,6 @@ const closeCommentsModal = () => {
     }));
   };
 
-  const toggleComments = (postId) => {
-  setOpenComments((prev) => ({
-    ...prev,
-    [postId]: !prev[postId],
-  }));
-};
 
 
   const [commentInputs, setCommentInputs] = useState({});
@@ -137,7 +131,7 @@ const closeCommentsModal = () => {
     className="see-more-btn"
     onClick={() => toggleExpand(post._id)}
   >
-    See more
+    ...see more
   </button>
 ) : (
   <button
@@ -148,12 +142,7 @@ const closeCommentsModal = () => {
   </button>
 )}
 
-<button
-  className="open-comments-btn"
-  onClick={() => openCommentsModal(post)}
->
-  Comments
-</button>
+
 
 
               <small className="post-author">By Dr. {post.author.name}</small>
@@ -162,28 +151,19 @@ const closeCommentsModal = () => {
                 {new Date(post.createdAt).toLocaleString()}
               </small>
 
-              <small className="comment-count">
-  {post.comments.length} comment{post.comments.length !== 1 ? "s" : ""}
-</small>
+              <div className="comment-meta">
+  <small className="comment-count">
+    {post.comments.length} comment{post.comments.length !== 1 ? "s" : ""}
+  </small>
 
-<button
-  className="see-comments-btn"
-  onClick={() => toggleComments(post._id)}
->
-  {openComments[post._id] ? "Hide Comments" : "Past Comments"}
-</button>
+  <button
+    className="open-comments-btn"
+    onClick={() => openCommentsModal(post)}
+  >
+    Comments
+  </button>
+</div>
 
-
-              {openComments[post._id] && (
-  <div className="forum-comments">
-    {post.comments.map(comment => (
-      <div key={comment._id} className="forum-comment">
-        <strong>Dr. {comment.author.name}:</strong> {comment.text}
-        <div className="comment-time">{timeAgo(comment.createdAt)}</div>
-      </div>
-    ))}
-  </div>
-)}
 
 
               
