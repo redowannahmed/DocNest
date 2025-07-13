@@ -8,6 +8,17 @@ export default function DoctorDashboard({ user }) {
   const [openComments, setOpenComments] = useState({});
 
   const token = localStorage.getItem("token");
+  const [activePost, setActivePost] = useState(null);
+
+  const openCommentsModal = (post) => {
+  setActivePost(post);
+};
+
+const closeCommentsModal = () => {
+  setActivePost(null);
+};
+
+
 
 
   useEffect(() => {
@@ -33,24 +44,32 @@ export default function DoctorDashboard({ user }) {
     setNewPost({ title: "", content: "" });
   };
 
-  const handleAddComment = async (e, postId) => {
-    e.preventDefault();
-    const text = commentInputs[postId];
-    if (!text) return;
+ const handleAddComment = async (e, postId) => {
+  e.preventDefault();
+  const text = commentInputs[postId];
+  if (!text) return;
 
-    const res = await fetch(`/api/forum/${postId}/comments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-      body: JSON.stringify({ text }),
-    });
+  const res = await fetch(`/api/forum/${postId}/comments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify({ text }),
+  });
 
-    const updatedPost = await res.json();
-    setPosts(posts.map(p => p._id === updatedPost._id ? updatedPost : p));
-    setCommentInputs({ ...commentInputs, [postId]: "" });
-  };
+  const updatedPost = await res.json();
+
+  // Update posts list
+  setPosts(posts.map((p) => (p._id === updatedPost._id ? updatedPost : p)));
+
+  // Clear input
+  setCommentInputs({ ...commentInputs, [postId]: "" });
+
+  // Close modal
+  closeCommentsModal();
+};
+
 
   const toggleExpand = (postId) => {
     setExpandedPosts((prev) => ({
@@ -129,6 +148,14 @@ export default function DoctorDashboard({ user }) {
   </button>
 )}
 
+<button
+  className="open-comments-btn"
+  onClick={() => openCommentsModal(post)}
+>
+  Comments
+</button>
+
+
               <small className="post-author">By Dr. {post.author.name}</small>
               <br/>
               <small className="post-date">
@@ -159,21 +186,51 @@ export default function DoctorDashboard({ user }) {
 )}
 
 
-              <form onSubmit={e => handleAddComment(e, post._id)} className="comment-form">
-                <input
-                  type="text"
-                  placeholder="Add a comment..."
-                  value={commentInputs[post._id] || ""}
-                  onChange={e =>
-                    setCommentInputs({ ...commentInputs, [post._id]: e.target.value })
-                  }
-                  required
-                />
-                <button type="submit">Comment</button>
-              </form>
+              
             </div>
           ))}
         </div>
+        {activePost && (
+  <div className="modal-overlay">
+    <div className="modal">
+      <h3>{activePost.title}</h3>
+      <p>{activePost.content}</p>
+
+      <div className="modal-comments">
+        {activePost.comments.map((comment) => (
+          <div key={comment._id} className="forum-comment">
+            <strong>Dr. {comment.author.name}:</strong> {comment.text}
+            <div className="comment-time">{timeAgo(comment.createdAt)}</div>
+          </div>
+        ))}
+      </div>
+
+      <form
+        onSubmit={(e) => handleAddComment(e, activePost._id)}
+        className="comment-form"
+      >
+        <input
+          type="text"
+          placeholder="Add a comment..."
+          value={commentInputs[activePost._id] || ""}
+          onChange={(e) =>
+            setCommentInputs({
+              ...commentInputs,
+              [activePost._id]: e.target.value,
+            })
+          }
+          required
+        />
+        <button type="submit">Comment</button>
+      </form>
+
+      <button className="close-modal-btn" onClick={closeCommentsModal}>
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
       </section>
 
       <section className="profile-access">

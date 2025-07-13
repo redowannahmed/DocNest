@@ -104,7 +104,7 @@ section h2 {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   max-width: 100%;
-  height: 205px; /* ✅ fixed height */
+  height: 155px; /* ✅ fixed height */
   overflow: hidden; /* ✅ hide overflow by default */
   position: relative;
 }
@@ -122,7 +122,18 @@ section h2 {
 
 .forum-post p {
   margin: 0 0 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
+
+.forum-post.expanded p {
+  white-space: normal; /* allow multiple lines */
+  overflow: visible;
+  text-overflow: initial;
+}
+
+
 
 .post-author {
   display: inline-block;
@@ -222,3 +233,62 @@ section h2 {
   text-decoration: underline;
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 41, 59, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-bottom: 0.5rem;
+}
+
+.modal p {
+  margin-bottom: 1rem;
+}
+
+.modal-comments {
+  border-top: 2px solid #cbd5e1;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.close-modal-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  background: #ef4444;
+  border: none;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.open-comments-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
