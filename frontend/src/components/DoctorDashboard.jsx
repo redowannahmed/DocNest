@@ -5,6 +5,8 @@ export default function DoctorDashboard({ user }) {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [expandedPosts, setExpandedPosts] = useState({});
+  const [openComments, setOpenComments] = useState({});
+
   const token = localStorage.getItem("token");
 
 
@@ -56,6 +58,14 @@ export default function DoctorDashboard({ user }) {
       [postId]: !prev[postId],
     }));
   };
+
+  const toggleComments = (postId) => {
+  setOpenComments((prev) => ({
+    ...prev,
+    [postId]: !prev[postId],
+  }));
+};
+
 
   const [commentInputs, setCommentInputs] = useState({});
 
@@ -125,14 +135,29 @@ export default function DoctorDashboard({ user }) {
                 {new Date(post.createdAt).toLocaleString()}
               </small>
 
-              <div className="forum-comments">
-                {post.comments.map(comment => (
-                  <div key={comment._id} className="forum-comment">
-                    <strong>Dr. {comment.author.name}:</strong> {comment.text}
-                    <div className="comment-time">{timeAgo(comment.createdAt)}</div>
-                  </div>
-                ))}
-              </div>
+              <small className="comment-count">
+  {post.comments.length} comment{post.comments.length !== 1 ? "s" : ""}
+</small>
+
+<button
+  className="see-comments-btn"
+  onClick={() => toggleComments(post._id)}
+>
+  {openComments[post._id] ? "Hide Comments" : "Past Comments"}
+</button>
+
+
+              {openComments[post._id] && (
+  <div className="forum-comments">
+    {post.comments.map(comment => (
+      <div key={comment._id} className="forum-comment">
+        <strong>Dr. {comment.author.name}:</strong> {comment.text}
+        <div className="comment-time">{timeAgo(comment.createdAt)}</div>
+      </div>
+    ))}
+  </div>
+)}
+
 
               <form onSubmit={e => handleAddComment(e, post._id)} className="comment-form">
                 <input
