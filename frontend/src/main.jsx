@@ -25,7 +25,7 @@ function AppRouter() {
     if (userData.selectedRole === "doctor") {
       navigate("/doctor")
     } else {
-      navigate("/dashboard") // Redirect to the dashboard after login
+      navigate("/dashboard") // Redirect to the dashboard (Landing component)
     }
   }
 
@@ -36,30 +36,22 @@ function AppRouter() {
     navigate("/dashboard") // Redirect to dashboard after registration
   }
 
-  const handleLogout = () => {
-    setUser(null)
-    localStorage.removeItem("user")
-    localStorage.removeItem("token")
-    navigate("/")
-  }
-
   return (
     <Routes>
-      {/* Homepage - shown to unauthenticated users */}
-      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Homepage />} />
+      {/* Homepage - Default route that everyone sees first */}
+      <Route path="/" element={<Homepage />} />
 
-      {/* Authentication routes - only accessible when not logged in */}
-      <Route path="/signin" element={user ? <Navigate to="/dashboard" /> : <SignIn onLogin={handleLogin} />} />
-      <Route path="/signup" element={user ? <Navigate to="/dashboard" /> : <SignUp onRegister={handleRegister} />} />
+      {/* Authentication routes */}
+      <Route path="/signin" element={<SignIn onLogin={handleLogin} />} />
+      <Route path="/signup" element={<SignUp onRegister={handleRegister} />} />
 
-      {/* Protected routes - only accessible when logged in */}
-      <Route
-        path="/dashboard"
-        element={user ? <Landing user={user} setUser={setUser} onLogout={handleLogout} /> : <Navigate to="/" />}
-      />
+      {/* Dashboard route - Landing component for authenticated users */}
+      <Route path="/dashboard" element={user ? <Landing user={user} setUser={setUser} /> : <Navigate to="/signin" />} />
+
+      {/* Doctor dashboard */}
       <Route
         path="/doctor"
-        element={user && user.selectedRole === "doctor" ? <DoctorDashboard user={user} /> : <Navigate to="/" />}
+        element={user && user.selectedRole === "doctor" ? <DoctorDashboard user={user} /> : <Navigate to="/signin" />}
       />
 
       {/* Catch all route */}

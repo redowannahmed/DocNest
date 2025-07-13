@@ -1,34 +1,31 @@
-/* Modern, clean SignIn component styling - Reference Design */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Modern, clean SignIn component styling - Aligned with Homepage Theme */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 .auth-container {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url('../assets/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .auth-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px);
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
 }
 
 .auth-container h2 {
-  color: #1f2937;
+  color: white;
   font-size: 2.25rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -39,7 +36,7 @@
 }
 
 .auth-subtitle {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
   font-weight: 400;
   margin-bottom: 2rem;
@@ -51,16 +48,14 @@
 .auth-container form {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
   position: relative;
   z-index: 1;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -75,29 +70,31 @@
 .input-icon {
   position: absolute;
   left: 1rem;
-  color: #9ca3af;
+  color: #667eea;
   font-size: 1.125rem;
   z-index: 2;
 }
 
-.auth-container input {
+.auth-container input,
+.auth-container .role-select {
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
-  border: 1px solid #e5e7eb;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 400;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   background: #f9fafb;
   color: #374151;
   outline: none;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-.auth-container input:focus {
-  border-color: #f97316;
+.auth-container input:focus,
+.auth-container .role-select:focus {
+  border-color: #667eea;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .auth-container input::placeholder {
@@ -105,8 +102,18 @@
   font-weight: 400;
 }
 
+.role-select {
+  cursor: pointer;
+}
+
+.role-select option {
+  padding: 0.5rem;
+  background: white;
+  color: #374151;
+}
+
 .auth-container button {
-  background: #f97316;
+  background: linear-gradient(45deg, #667eea, #764ba2);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -114,19 +121,29 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  font-family: "Inter", sans-serif;
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .auth-container button:hover {
-  background: #ea580c;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .auth-container button:active {
   transform: translateY(0);
+}
+
+.auth-container button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .auth-container .error {
@@ -137,8 +154,8 @@
   border-radius: 8px;
   font-size: 0.875rem;
   text-align: center;
-  margin-top: 0.5rem;
-  font-family: 'Inter', sans-serif;
+  margin-bottom: 0.5rem;
+  font-family: "Inter", sans-serif;
 }
 
 .auth-links {
@@ -149,36 +166,50 @@
 }
 
 .auth-links p {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .auth-links a {
-  color: #f97316;
+  color: #feca57;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .auth-links a:hover {
-  color: #ea580c;
+  color: #ff9ff3;
+  text-decoration: underline;
+}
+
+/* Spinner animation */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive design */
 @media (max-width: 640px) {
   .auth-container {
     padding: 1rem;
-    background-attachment: scroll;
   }
-  
+
   .auth-container form {
     padding: 2rem 1.5rem;
     margin: 1rem;
     max-width: 100%;
   }
-  
+
   .auth-container h2 {
     font-size: 1.875rem;
   }
@@ -197,7 +228,8 @@
 
 /* Focus visible for keyboard navigation */
 .auth-container input:focus-visible,
+.auth-container .role-select:focus-visible,
 .auth-container button:focus-visible {
-  outline: 2px solid #f97316;
+  outline: 2px solid #667eea;
   outline-offset: 2px;
 }
