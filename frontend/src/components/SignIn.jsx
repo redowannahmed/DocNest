@@ -44,6 +44,7 @@ const SignIn = ({ onLogin }) => {
 
   return (
     <div className="auth-container">
+      <div className="webapp-corner">DocNest</div>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "2rem" }}>
           <Link

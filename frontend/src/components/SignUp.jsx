@@ -30,6 +30,7 @@ const SignUp = ({ onRegister }) => {
 
   return (
     <div className="auth-container">
+      <div className="webapp-corner">DocNest</div>
       <div>
         <h2>Create Account</h2>
         <p className="auth-subtitle">Join us to start your learning journey</p>

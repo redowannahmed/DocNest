@@ -75,20 +75,17 @@
   color: #667eea;
 }
 
-
-
 .auth-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #feca57 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   padding: 2rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background-size: cover;
 }
-
 
 .auth-container::before {
   content: '';
@@ -97,9 +94,23 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><ellipse cx="18%25" cy="12%25" rx="120" ry="60" fill="%23fff" opacity="0.10"/><ellipse cx="80%25" cy="80%25" rx="140" ry="70" fill="%23667eea" opacity="0.13"/><ellipse cx="60%25" cy="40%25" rx="80" ry="40" fill="%23feca57" opacity="0.10"/><ellipse cx="50%25" cy="70%25" rx="60" ry="30" fill="%23764ba2" opacity="0.09"/></svg>');
+  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20%25" cy="15%25" rx="120" ry="60" fill="%23fff" opacity="0.10"/><ellipse cx="80%25" cy="80%25" rx="140" ry="70" fill="%23667eea" opacity="0.13"/><ellipse cx="60%25" cy="40%25" rx="80" ry="40" fill="%23feca57" opacity="0.10"/><ellipse cx="50%25" cy="70%25" rx="60" ry="30" fill="%23764ba2" opacity="0.09"/></svg>');
   opacity: 1;
   z-index: 0;
+}
+
+.webapp-corner {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 12px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #667eea;
+  box-shadow: 0 2px 12px rgba(102,126,234,0.10);
+  z-index: 2;
 }
 
 .auth-container::before {
@@ -112,27 +123,47 @@
   background: transparent;
 }
 
+.auth-container h2 {
+  color: #1f2937;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
 
 .auth-container h2 {
-  color: #2d3748;
+  color: #23272f;
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 900;
   margin-bottom: 0.75rem;
   text-align: center;
   position: relative;
   z-index: 1;
   letter-spacing: -1px;
+  text-shadow: 0 2px 8px rgba(102,126,234,0.12);
 }
 
-
 .auth-subtitle {
-  color: #4a5568;
-  font-size: 1.1rem;
-  font-weight: 500;
+  color: #6b7280;
+  font-size: 1rem;
+  font-weight: 400;
   margin-bottom: 2rem;
   text-align: center;
   position: relative;
   z-index: 1;
+}
+
+.auth-subtitle {
+  color: #23272f;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 4px rgba(102,126,234,0.10);
 }
 
 .auth-container form {
@@ -185,6 +216,21 @@
   font-family: 'Inter', sans-serif;
 }
 
+.auth-container input {
+  width: 100%;
+  padding: 0.9rem 0.9rem 0.9rem 2.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: #fff;
+  color: #23272f;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+}
+
 .auth-container input:focus {
   border-color: #f97316;
   background: #ffffff;
@@ -209,17 +255,18 @@
 }
 
 .auth-container button {
-  background: #f97316;
-  color: white;
+  background: linear-gradient(90deg, #667eea 0%, #feca57 100%);
+  color: #fff;
   border: none;
   padding: 1rem 2rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 14px;
+  font-size: 1.08rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-family: 'Inter', sans-serif;
   margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.18);
 }
 
 .auth-container button:hover {
@@ -275,8 +322,8 @@
 }
 
 .auth-links p {
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: #23272f;
+  font-size: 0.98rem;
   margin: 0;
   font-family: 'Inter', sans-serif;
 }
