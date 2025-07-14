@@ -1,6 +1,80 @@
 /* Modern, clean SignIn component styling - Aligned with Homepage Theme */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
+
+.auth-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 0;
+  margin: 1rem;
+  border-radius: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.logo-icon i {
+  font-size: 24px;
+  color: white;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.signup-link {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.signup-link:hover {
+  background: white;
+  color: #667eea;
+}
+
 .auth-container {
   min-height: 100vh;
   display: flex;
@@ -10,7 +84,9 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   padding: 2rem;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", sans-serif;
+  overflow: hidden;
+  background-size: cover;
 }
 
 .auth-container::before {
@@ -20,12 +96,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  background: rgba(0, 0, 0, 0.2); /* Darkened overlay for better text visibility */
   opacity: 0.3;
 }
 
 .auth-container h2 {
-  color: white;
+  color: #ffffff;
   font-size: 2.25rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -70,7 +146,7 @@
 .input-icon {
   position: absolute;
   left: 1rem;
-  color: #667eea;
+  color: #feca57; /* Matches the accent color of Homepage */
   font-size: 1.125rem;
   z-index: 2;
 }
@@ -92,9 +168,9 @@
 
 .auth-container input:focus,
 .auth-container .role-select:focus {
-  border-color: #667eea;
+  border-color: #feca57;
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
 .auth-container input::placeholder {
@@ -113,7 +189,7 @@
 }
 
 .auth-container button {
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, #667eea, #feca57); /* Button gradient inspired by Homepage */
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -184,21 +260,6 @@
   text-decoration: underline;
 }
 
-/* Spinner animation */
-.fa-spinner {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive design */
 @media (max-width: 640px) {
   .auth-container {
     padding: 1rem;
@@ -217,19 +278,4 @@
   .auth-subtitle {
     font-size: 0.875rem;
   }
-}
-
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-  .auth-container button:hover {
-    transform: none;
-  }
-}
-
-/* Focus visible for keyboard navigation */
-.auth-container input:focus-visible,
-.auth-container .role-select:focus-visible,
-.auth-container button:focus-visible {
-  outline: 2px solid #667eea;
-  outline-offset: 2px;
 }

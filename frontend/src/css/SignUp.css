@@ -1,18 +1,90 @@
+/* Modern, clean SignUp component styling - Aligned with Homepage Theme */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+.auth-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 0;
+  margin: 1rem;
+  border-radius: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.logo-icon i {
+  font-size: 24px;
+  color: white;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.signup-link {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.signup-link:hover {
+  background: white;
+  color: #667eea;
+}
 
 .auth-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('../assets/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   padding: 2rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-size: cover;
 }
 
 .auth-container::before {
@@ -22,7 +94,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: transparent; /* No opacity overlay */
+  background: transparent;
 }
 
 .auth-container h2 {
@@ -50,11 +122,9 @@
   backdrop-filter: none;
   padding: 2rem;
   border-radius: 16px;
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   width: 100%;
-  max-width: 340px; /* Made form smaller */
+  max-width: 340px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -153,7 +223,6 @@
   font-size: 0.875rem;
   text-align: center;
   margin-top: 0.5rem;
-  font-family: 'Inter', sans-serif;
 }
 
 .auth-container .success {
@@ -170,13 +239,13 @@
 }
 
 @keyframes slideInFromTop {
-  0% { 
-    opacity: 0; 
-    transform: translateY(-20px); 
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0); 
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -205,20 +274,19 @@
   color: #ea580c;
 }
 
-/* Responsive design */
 @media (max-width: 640px) {
   .auth-container {
     padding: 1rem;
     background-attachment: scroll;
   }
-  
+
   .auth-container form {
     padding: 1.5rem 1rem;
     margin: 1rem;
     max-width: 100%;
     gap: 1.25rem;
   }
-  
+
   .auth-container h2 {
     font-size: 1.75rem;
   }
@@ -242,7 +310,7 @@
   .auth-container button:hover {
     transform: none;
   }
-  
+
   .auth-container .success {
     animation: none;
   }
