@@ -25,6 +25,7 @@ export default function Landing({ user: initialUser, setUser }) {
     fetch("/api/auth/me", { headers: { Authorization: token } })
       .then((res) => res.json())
       .then((data) => {
+        console.log("[Landing] /api/auth/me response:", data)
         if (data && data._id) {
           setUserState(data)
           setUser && setUser(data)
