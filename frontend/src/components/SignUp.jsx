@@ -97,17 +97,19 @@ const SignUp = ({ onRegister }) => {
               />
             </div>
             <div className="input-group">
-              <label>Register As</label>
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                required
-              >
-                <option value="patient">Patient</option>
-                <option value="doctor">Doctor</option>
-              </select>
-            </div>
+  <i className="fas fa-user-md input-icon"></i>
+  <select
+    name="role"
+    value={form.role}
+    onChange={handleChange}
+    required
+    className="role-select"
+  >
+    <option value="patient">Register as Patient</option>
+    <option value="doctor">Register as Doctor</option>
+  </select>
+</div>
+
           </div>
           <button type="submit">Create Account</button>
           {error && <p className="error">{error}</p>}
