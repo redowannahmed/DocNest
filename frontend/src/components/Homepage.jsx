@@ -7,10 +7,17 @@ const Homepage = () => {
       {/* Header Section */}
       <header className="header">
         <div className="container">
-          <div className="logo">
-            <div className="logo-icon">
-              <i className="fas fa-file-medical-alt"></i>
-            </div>
+          <div className="logo custom-logo">
+            <svg className="logo-svg" width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="26" r="22" fill="url(#grad)" stroke="#fff" strokeWidth="3"/>
+              <path d="M18 26h16M26 18v16" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
+              <defs>
+                <linearGradient id="grad" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#667eea"/>
+                  <stop offset="1" stopColor="#feca57"/>
+                </linearGradient>
+              </defs>
+            </svg>
             <h1 className="logo-text">DocNest</h1>
           </div>
           <nav className="nav-buttons">
