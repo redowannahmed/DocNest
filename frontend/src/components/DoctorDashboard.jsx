@@ -145,7 +145,7 @@ const closeCommentsModal = () => {
 
 
 
-              <small className="post-author">By Dr. {post.author.name}</small>
+              <small className="post-author">By Dr. {post.author && post.author.name ? post.author.name : "Unknown"}</small>
               <br/>
               <small className="post-date">
                 {new Date(post.createdAt).toLocaleString()}
@@ -179,7 +179,7 @@ const closeCommentsModal = () => {
       <div className="modal-comments">
         {activePost.comments.map((comment) => (
           <div key={comment._id} className="forum-comment">
-            <strong>Dr. {comment.author.name}:</strong> {comment.text}
+            <strong>Dr. {comment.author && comment.author.name ? comment.author.name : "Unknown"}:</strong> {comment.text}
             <div className="comment-time">{timeAgo(comment.createdAt)}</div>
           </div>
         ))}

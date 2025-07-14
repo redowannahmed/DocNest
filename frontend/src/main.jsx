@@ -22,7 +22,7 @@ function AppRouter() {
     localStorage.setItem("token", token)
 
     // Check user role and redirect to the appropriate route
-    if (userData.selectedRole === "doctor") {
+    if (userData.role === "doctor") {
       navigate("/doctor")
     } else {
       navigate("/dashboard") // Redirect to the dashboard (Landing component)
@@ -51,7 +51,7 @@ function AppRouter() {
       {/* Doctor dashboard */}
       <Route
         path="/doctor"
-        element={user && user.selectedRole === "doctor" ? <DoctorDashboard user={user} /> : <Navigate to="/signin" />}
+        element={user && user.role === "doctor" ? <DoctorDashboard user={user} /> : <Navigate to="/signin" />}
       />
 
       {/* Catch all route */}

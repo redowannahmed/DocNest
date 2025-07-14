@@ -29,10 +29,8 @@ const SignIn = ({ onLogin }) => {
       const data = await response.json()
 
       if (response.ok) {
-        // Add the selected role to user data
-        const userData = { ...data.user, selectedRole: role }
-
-        // Call the parent login handler - this will handle navigation
+        // Use backend-provided role only
+        const userData = { ...data.user }
         onLogin(userData, data.token)
       } else {
         setError(data.message || "Login failed")
