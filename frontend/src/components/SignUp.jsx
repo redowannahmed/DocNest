@@ -36,7 +36,7 @@ const SignUp = ({ onRegister }) => {
         <form onSubmit={handleSubmit}>
           <div className="form-section personal-info">
             <div className="input-group">
-              <span className="input-icon">👤</span>
+              <i className="fas fa-user input-icon"></i>
               <input 
                 name="name" 
                 placeholder="Full Name" 
@@ -46,7 +46,7 @@ const SignUp = ({ onRegister }) => {
               />
             </div>
             <div className="input-group">
-              <span className="input-icon">✉️</span>
+              <i className="fas fa-envelope input-icon"></i>
               <input 
                 name="email" 
                 type="email" 
@@ -57,7 +57,7 @@ const SignUp = ({ onRegister }) => {
               />
             </div>
             <div className="input-group">
-              <span className="input-icon">🔒</span>
+              <i className="fas fa-lock input-icon"></i>
               <input 
                 name="password" 
                 type="password" 
@@ -70,7 +70,7 @@ const SignUp = ({ onRegister }) => {
           </div>
           <div className="form-section additional-info">
             <div className="input-group">
-              <span className="input-icon">🎂</span>
+              <i className="fas fa-birthday-cake input-icon"></i>
               <input 
                 name="age" 
                 placeholder="Age" 
@@ -79,7 +79,7 @@ const SignUp = ({ onRegister }) => {
               />
             </div>
             <div className="input-group">
-              <span className="input-icon">⚧️</span>
+              <i className="fas fa-venus-mars input-icon"></i>
               <input 
                 name="gender" 
                 placeholder="Gender" 
@@ -88,7 +88,7 @@ const SignUp = ({ onRegister }) => {
               />
             </div>
             <div className="input-group">
-              <span className="input-icon">📍</span>
+              <i className="fas fa-map-marker-alt input-icon"></i>
               <input 
                 name="location" 
                 placeholder="Location" 

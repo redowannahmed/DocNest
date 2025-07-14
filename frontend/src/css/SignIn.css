@@ -75,18 +75,33 @@
   color: #667eea;
 }
 
+
+
 .auth-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #feca57 100%);
   position: relative;
   padding: 2rem;
   font-family: "Inter", sans-serif;
   overflow: hidden;
   background-size: cover;
+}
+
+
+.auth-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><ellipse cx="18%25" cy="12%25" rx="120" ry="60" fill="%23fff" opacity="0.10"/><ellipse cx="80%25" cy="80%25" rx="140" ry="70" fill="%23667eea" opacity="0.13"/><ellipse cx="60%25" cy="40%25" rx="80" ry="40" fill="%23feca57" opacity="0.10"/><ellipse cx="50%25" cy="70%25" rx="60" ry="30" fill="%23764ba2" opacity="0.09"/></svg>');
+  opacity: 1;
+  z-index: 0;
 }
 
 .auth-container::before {
@@ -100,21 +115,24 @@
   opacity: 0.3;
 }
 
+
 .auth-container h2 {
-  color: #ffffff;
-  font-size: 2.25rem;
-  font-weight: 700;
+  color: #2d3748;
+  font-size: 2.5rem;
+  font-weight: 800;
   margin-bottom: 0.5rem;
   text-align: left;
   position: relative;
   z-index: 1;
   line-height: 1.2;
+  letter-spacing: -1px;
 }
 
+
 .auth-subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  font-weight: 400;
+  color: #4a5568;
+  font-size: 1.1rem;
+  font-weight: 500;
   margin-bottom: 2rem;
   text-align: left;
   position: relative;
