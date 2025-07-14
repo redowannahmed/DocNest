@@ -7,18 +7,21 @@ const Homepage = () => {
       {/* Header Section */}
       <header className="header">
         <div className="container">
-          <div className="logo custom-logo">
-            <svg className="logo-svg" width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="26" cy="26" r="22" fill="url(#grad)" stroke="#fff" strokeWidth="3"/>
-              <path d="M18 26h16M26 18v16" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
-              <defs>
-                <linearGradient id="grad" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#667eea"/>
-                  <stop offset="1" stopColor="#feca57"/>
-                </linearGradient>
-              </defs>
-            </svg>
-            <h1 className="logo-text">DocNest</h1>
+          <div className="logo-box">
+            <div className="logo custom-logo">
+              <svg className="logo-svg" width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="40" height="40" rx="12" fill="url(#docnest-gradient)" stroke="#667eea" strokeWidth="2.5"/>
+                <path d="M18 26c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z" fill="#fff" stroke="#feca57" strokeWidth="2"/>
+                <path d="M26 22v8M22 26h8" stroke="#667eea" strokeWidth="2" strokeLinecap="round"/>
+                <defs>
+                  <linearGradient id="docnest-gradient" x1="6" y1="6" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#667eea"/>
+                    <stop offset="1" stopColor="#feca57"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <h1 className="logo-text">DocNest</h1>
+            </div>
           </div>
           <nav className="nav-buttons">
             <Link to="/signin" className="nav-link">
