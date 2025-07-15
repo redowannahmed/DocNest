@@ -19,4 +19,3 @@ exports.requireDoctorRole = (req, res, next) => {
   }
   next();
 };
-
