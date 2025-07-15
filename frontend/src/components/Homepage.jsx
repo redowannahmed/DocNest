@@ -20,7 +20,7 @@ const Homepage = () => {
                   </linearGradient>
                 </defs>
               </svg>
-              <h1 className="logo-text">DocNest</h1>
+              <h1 className="logo-text">Doc</h1>
             </div>
           </div>
           <nav className="nav-buttons">
