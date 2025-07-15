@@ -1,6 +1,5 @@
 .doctor-dashboard {
   padding: 2rem;
-  max-width: 960px;
   margin: 0 auto;
   font-family: 'Inter', sans-serif;
   color: #1e293b;
@@ -60,14 +59,16 @@ section h2 {
 .forum-form input,
 .forum-form textarea {
   padding: 0.75rem;
+  max-width: 500px;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   font-size: 0.9rem;
 }
 
 .forum-form button {
-  background: #3b82f6;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
   color: #fff;
+  max-width: 200px;
   border: none;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
@@ -158,6 +159,7 @@ section h2 {
   display: inline-block;
   margin-top: 0.5rem;
   margin-left: -0.40rem;
+  padding-right: 20px;
   background: none;
   border: none;
   color: #000; /* ✅ black */
@@ -169,9 +171,9 @@ section h2 {
 
 .forum-comments {
   margin-top: 1rem;
-  border-top: 2px solid #cbd5e1; /* Clear separation */
+  border-top: 2px solid #cbd5e1;
   padding-top: 0.75rem;
-  padding-left: 1rem; /* Indent comments */
+  padding-left: 1rem;
 }
 
 .forum-comment {
@@ -213,7 +215,6 @@ section h2 {
 /* New Ask for Patient Profile Access styling */
 .profile-access .coming-soon {
   background: #ffffff;
-  border: 2px dashed #93c5fd;
   border-radius: 0.75rem;
   text-align: center;
   color: #64748b;
@@ -303,4 +304,35 @@ section h2 {
   align-items: center;
   gap: 0.75rem;
   margin-top: 0.5rem;
+}
+
+.doctor-dashboard .dashboard-content-row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.community-forum {
+  flex: 0 0 80%;
+  max-width: 80%;
+}
+
+.profile-access {
+  /* flex: 0 0 20%; */
+  max-width: 20%;
+  min-width: 10%;
+  min-height: 500px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .doctor-dashboard .dashboard-content-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .community-forum,
+  .profile-access {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
 }
