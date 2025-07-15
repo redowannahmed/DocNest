@@ -5,27 +5,20 @@ export default function DoctorDashboard({ user }) {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [expandedPosts, setExpandedPosts] = useState({});
-
-
-  const token = localStorage.getItem("token");
   const [activePost, setActivePost] = useState(null);
+  const [commentInputs, setCommentInputs] = useState({});
+  const token = localStorage.getItem("token");
 
   const openCommentsModal = (post) => {
-  setActivePost(post);
-};
-
-const closeCommentsModal = () => {
-  setActivePost(null);
-};
-
-
-
+    setActivePost(post);
+  };
+  const closeCommentsModal = () => {
+    setActivePost(null);
+  };
 
   useEffect(() => {
-    fetch("/api/forum", {
-      headers: { Authorization: token },
-    })
-      .then(res => res.json())
+    fetch("/api/forum", { headers: { Authorization: token } })
+      .then((res) => res.json())
       .then(setPosts);
   }, [token]);
 
@@ -44,32 +37,25 @@ const closeCommentsModal = () => {
     setNewPost({ title: "", content: "" });
   };
 
- const handleAddComment = async (e, postId) => {
-  e.preventDefault();
-  const text = commentInputs[postId];
-  if (!text) return;
+  const handleAddComment = async (e, postId) => {
+    e.preventDefault();
+    const text = commentInputs[postId];
+    if (!text) return;
 
-  const res = await fetch(`/api/forum/${postId}/comments`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token,
-    },
-    body: JSON.stringify({ text }),
-  });
+    const res = await fetch(`/api/forum/${postId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify({ text }),
+    });
 
-  const updatedPost = await res.json();
-
-  // Update posts list
-  setPosts(posts.map((p) => (p._id === updatedPost._id ? updatedPost : p)));
-
-  // Clear input
-  setCommentInputs({ ...commentInputs, [postId]: "" });
-
-  // Close modal
-  closeCommentsModal();
-};
-
+    const updatedPost = await res.json();
+    setPosts(posts.map((p) => (p._id === updatedPost._id ? updatedPost : p)));
+    setCommentInputs({ ...commentInputs, [postId]: "" });
+    closeCommentsModal();
+  };
 
   const toggleExpand = (postId) => {
     setExpandedPosts((prev) => ({
@@ -77,10 +63,6 @@ const closeCommentsModal = () => {
       [postId]: !prev[postId],
     }));
   };
-
-
-
-  const [commentInputs, setCommentInputs] = useState({});
 
   const timeAgo = (date) => {
     const now = new Date();
@@ -109,51 +91,59 @@ const closeCommentsModal = () => {
             <input
               placeholder="Post Title"
               value={newPost.title}
-              onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
               required
             />
             <textarea
               placeholder="What's on your mind?"
               value={newPost.content}
-              onChange={e => setNewPost({ ...newPost, content: e.target.value })}
+              onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
               required
             />
             <button type="submit">Post</button>
           </form>
 
           <div className="forum-posts">
-            {posts.map(post => (
-              <div key={post._id} className={`forum-post ${expandedPosts[post._id] ? "expanded" : ""}`}>
+            {posts.map((post) => (
+              <div
+                key={post._id}
+                className={`forum-post ${
+                  expandedPosts[post._id] ? "expanded" : ""
+                }`}
+              >
                 <h3>{post.title}</h3>
                 <p>{post.content}</p>
 
-{!expandedPosts[post._id] ? (
-  <button
-    className="see-more-btn"
-    onClick={() => toggleExpand(post._id)}
-  >
-    ...see more
-  </button>
-) : (
-  <button
-    className="see-more-btn"
-    onClick={() => toggleExpand(post._id)}
-  >
-    Show less
-  </button>
-)}
+                {!expandedPosts[post._id] ? (
+                  <button
+                    className="see-more-btn"
+                    onClick={() => toggleExpand(post._id)}
+                  >
+                    ...see more
+                  </button>
+                ) : (
+                  <button
+                    className="see-more-btn"
+                    onClick={() => toggleExpand(post._id)}
+                  >
+                    Show less
+                  </button>
+                )}
 
-
-
-
-                <small className="post-author">By Dr. {post.author && post.author.name ? post.author.name : "Unknown"}</small>
-                <br/>
+                <small className="post-author">
+                  By Dr.{" "}
+                  {post.author && post.author.name
+                    ? post.author.name
+                    : "Unknown"}
+                </small>
+                <br />
                 <small className="post-date">
                   {new Date(post.createdAt).toLocaleString()}
                 </small>
                 <div className="comment-meta">
                   <small className="comment-count">
-                    {post.comments.length} comment{post.comments.length !== 1 ? "s" : ""}
+                    {post.comments.length} comment
+                    {post.comments.length !== 1 ? "s" : ""}
                   </small>
                   <button
                     className="open-comments-btn"
@@ -165,6 +155,7 @@ const closeCommentsModal = () => {
               </div>
             ))}
           </div>
+
           {activePost && (
             <div className="modal-overlay">
               <div className="modal">
@@ -173,8 +164,17 @@ const closeCommentsModal = () => {
                 <div className="modal-comments">
                   {activePost.comments.map((comment) => (
                     <div key={comment._id} className="forum-comment">
-                      <strong>Dr. {comment.author && comment.author.name ? comment.author.name : "Unknown"}:</strong> {comment.text}
-                      <div className="comment-time">{timeAgo(comment.createdAt)}</div>
+                      <strong>
+                        Dr.{" "}
+                        {comment.author && comment.author.name
+                          ? comment.author.name
+                          : "Unknown"}
+                        :
+                      </strong>{" "}
+                      {comment.text}
+                      <div className="comment-time">
+                        {timeAgo(comment.createdAt)}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -196,7 +196,10 @@ const closeCommentsModal = () => {
                   />
                   <button type="submit">Comment</button>
                 </form>
-                <button className="close-modal-btn" onClick={closeCommentsModal}>
+                <button
+                  className="close-modal-btn"
+                  onClick={closeCommentsModal}
+                >
                   Close
                 </button>
               </div>
@@ -207,7 +210,10 @@ const closeCommentsModal = () => {
         <section className="profile-access">
           <h2>Ask for Patient Profile Access</h2>
           <div className="coming-soon">
-            <p>Coming soon... Doctors will be able to request access to patient's profile here.</p>
+            <p>
+              Coming soon... Doctors will be able to request access to patient's
+              profile here.
+            </p>
           </div>
         </section>
       </div>
