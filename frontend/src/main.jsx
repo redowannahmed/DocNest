@@ -20,12 +20,14 @@ function AppRouter() {
     setUser(userData)
     localStorage.setItem("user", JSON.stringify(userData))
     localStorage.setItem("token", token)
-
+    console.log("[AppRouter] handleLogin userData:", userData)
     // Check user role and redirect to the appropriate route
     if (userData.role === "doctor") {
       navigate("/doctor")
+    } else if (userData.role === "patient") {
+      navigate("/dashboard")
     } else {
-      navigate("/dashboard") // Redirect to the dashboard (Landing component)
+      navigate("/") // fallback
     }
   }
 
