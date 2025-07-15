@@ -6,6 +6,8 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
   const [medForm, setMedForm] = useState({ name: "", dosage: "", frequency: "", icon: "" });
   const [showConditionModal, setShowConditionModal] = useState(false);
   const [showMedicationModal, setShowMedicationModal] = useState(false);
+  const [hoveredCondition, setHoveredCondition] = useState(null);
+  const [hoveredMedication, setHoveredMedication] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -53,6 +55,40 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
     setShowMedicationModal(false);
   };
 
+  const deleteCondition = async (conditionId) => {
+    try {
+      const res = await fetch(`/api/userdata/pinned-conditions/${conditionId}`, {
+        method: "DELETE",
+        headers: { Authorization: token },
+      });
+      
+      if (res.ok) {
+        setPinnedConditions(pinnedConditions.filter(condition => condition._id !== conditionId));
+      } else {
+        console.error("Failed to delete condition");
+      }
+    } catch (error) {
+      console.error("Error deleting condition:", error);
+    }
+  };
+
+  const deleteMedication = async (medicationId) => {
+    try {
+      const res = await fetch(`/api/userdata/medications/${medicationId}`, {
+        method: "DELETE",
+        headers: { Authorization: token },
+      });
+      
+      if (res.ok) {
+        setMedications(medications.filter(medication => medication._id !== medicationId));
+      } else {
+        console.error("Failed to delete medication");
+      }
+    } catch (error) {
+      console.error("Error deleting medication:", error);
+    }
+  };
+
   return (
     <div className="health-overview-container">
       <div className="health-cards-grid">
@@ -78,17 +114,33 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                 <div className="empty-state">No conditions added yet.</div>
               ) : (
                 pinnedConditions.map((condition, idx) => (
-                  <div key={idx} className="condition-item">
+                  <div 
+                    key={condition._id || idx} 
+                    className="condition-item"
+                    onMouseEnter={() => setHoveredCondition(condition._id)}
+                    onMouseLeave={() => setHoveredCondition(null)}
+                  >
                     <div className="condition-info">
                       <div className="condition-details">
                         <div className="condition-name">{condition.name}</div>
                         <div className="condition-date">{condition.since ? `Since ${condition.since}` : ""}</div>
                       </div>
                     </div>
-                    <div className="condition-status-badge">
-                      <span className={`status-badge status-${condition.severity?.toLowerCase()}`}>
-                        {condition.severity}
-                      </span>
+                    <div className="condition-actions">
+                      <div className="condition-status-badge">
+                        <span className={`status-badge status-${condition.severity?.toLowerCase()}`}>
+                          {condition.severity}
+                        </span>
+                      </div>
+                      {hoveredCondition === condition._id && (
+                        <button 
+                          className="delete-btn"
+                          onClick={() => deleteCondition(condition._id)}
+                          title="Delete condition"
+                        >
+                          🗑️
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))
@@ -119,13 +171,29 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                 <div className="empty-state">No medications added yet.</div>
               ) : (
                 medications.map((med, idx) => (
-                  <div key={idx} className="medication-item">
+                  <div 
+                    key={med._id || idx} 
+                    className="medication-item"
+                    onMouseEnter={() => setHoveredMedication(med._id)}
+                    onMouseLeave={() => setHoveredMedication(null)}
+                  >
                     <div className="medication-info">
                       <div className="medication-details">
                         <div className="medication-name">{med.name}</div>
                         <div className="medication-dosage">{med.dosage} • {med.frequency}</div>
                         <div className="medication-date">{med.since ? `Since ${med.since}` : ""}</div>
                       </div>
+                    </div>
+                    <div className="medication-actions">
+                      {hoveredMedication === med._id && (
+                        <button 
+                          className="delete-btn"
+                          onClick={() => deleteMedication(med._id)}
+                          title="Delete medication"
+                        >
+                          🗑️
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))
