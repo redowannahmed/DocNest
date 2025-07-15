@@ -101,30 +101,31 @@ const closeCommentsModal = () => {
         <p>Welcome, Dr. {user.name}</p>
       </header>
 
-      <section className="community-forum">
-        <h2>Community Forum</h2>
+      <div className="dashboard-content-row">
+        <section className="community-forum">
+          <h2>Community Forum</h2>
 
-        <form onSubmit={handleCreatePost} className="forum-form">
-          <input
-            placeholder="Post Title"
-            value={newPost.title}
-            onChange={e => setNewPost({ ...newPost, title: e.target.value })}
-            required
-          />
-          <textarea
-            placeholder="What's on your mind?"
-            value={newPost.content}
-            onChange={e => setNewPost({ ...newPost, content: e.target.value })}
-            required
-          />
-          <button type="submit">Post</button>
-        </form>
+          <form onSubmit={handleCreatePost} className="forum-form">
+            <input
+              placeholder="Post Title"
+              value={newPost.title}
+              onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+              required
+            />
+            <textarea
+              placeholder="What's on your mind?"
+              value={newPost.content}
+              onChange={e => setNewPost({ ...newPost, content: e.target.value })}
+              required
+            />
+            <button type="submit">Post</button>
+          </form>
 
-        <div className="forum-posts">
-          {posts.map(post => (
-            <div key={post._id} className={`forum-post ${expandedPosts[post._id] ? "expanded" : ""}`}>
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
+          <div className="forum-posts">
+            {posts.map(post => (
+              <div key={post._id} className={`forum-post ${expandedPosts[post._id] ? "expanded" : ""}`}>
+                <h3>{post.title}</h3>
+                <p>{post.content}</p>
 
 {!expandedPosts[post._id] ? (
   <button
@@ -145,81 +146,71 @@ const closeCommentsModal = () => {
 
 
 
-              <small className="post-author">By Dr. {post.author && post.author.name ? post.author.name : "Unknown"}</small>
-              <br/>
-              <small className="post-date">
-                {new Date(post.createdAt).toLocaleString()}
-              </small>
-
-              <div className="comment-meta">
-  <small className="comment-count">
-    {post.comments.length} comment{post.comments.length !== 1 ? "s" : ""}
-  </small>
-
-  <button
-    className="open-comments-btn"
-    onClick={() => openCommentsModal(post)}
-  >
-    Comments
-  </button>
-</div>
-
-
-
-              
-            </div>
-          ))}
-        </div>
-        {activePost && (
-  <div className="modal-overlay">
-    <div className="modal">
-      <h3>{activePost.title}</h3>
-      <p>{activePost.content}</p>
-
-      <div className="modal-comments">
-        {activePost.comments.map((comment) => (
-          <div key={comment._id} className="forum-comment">
-            <strong>Dr. {comment.author && comment.author.name ? comment.author.name : "Unknown"}:</strong> {comment.text}
-            <div className="comment-time">{timeAgo(comment.createdAt)}</div>
+                <small className="post-author">By Dr. {post.author && post.author.name ? post.author.name : "Unknown"}</small>
+                <br/>
+                <small className="post-date">
+                  {new Date(post.createdAt).toLocaleString()}
+                </small>
+                <div className="comment-meta">
+                  <small className="comment-count">
+                    {post.comments.length} comment{post.comments.length !== 1 ? "s" : ""}
+                  </small>
+                  <button
+                    className="open-comments-btn"
+                    onClick={() => openCommentsModal(post)}
+                  >
+                    Comments
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+          {activePost && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h3>{activePost.title}</h3>
+                <p>{activePost.content}</p>
+                <div className="modal-comments">
+                  {activePost.comments.map((comment) => (
+                    <div key={comment._id} className="forum-comment">
+                      <strong>Dr. {comment.author && comment.author.name ? comment.author.name : "Unknown"}:</strong> {comment.text}
+                      <div className="comment-time">{timeAgo(comment.createdAt)}</div>
+                    </div>
+                  ))}
+                </div>
+                <form
+                  onSubmit={(e) => handleAddComment(e, activePost._id)}
+                  className="comment-form"
+                >
+                  <input
+                    type="text"
+                    placeholder="Add a comment..."
+                    value={commentInputs[activePost._id] || ""}
+                    onChange={(e) =>
+                      setCommentInputs({
+                        ...commentInputs,
+                        [activePost._id]: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <button type="submit">Comment</button>
+                </form>
+                <button className="close-modal-btn" onClick={closeCommentsModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="profile-access">
+          <h2>Ask for Patient Profile Access</h2>
+          <div className="coming-soon">
+            <p>Coming soon... Doctors will be able to request access to patient's profile here.</p>
+          </div>
+        </section>
       </div>
-
-      <form
-        onSubmit={(e) => handleAddComment(e, activePost._id)}
-        className="comment-form"
-      >
-        <input
-          type="text"
-          placeholder="Add a comment..."
-          value={commentInputs[activePost._id] || ""}
-          onChange={(e) =>
-            setCommentInputs({
-              ...commentInputs,
-              [activePost._id]: e.target.value,
-            })
-          }
-          required
-        />
-        <button type="submit">Comment</button>
-      </form>
-
-      <button className="close-modal-btn" onClick={closeCommentsModal}>
-        Close
-      </button>
-    </div>
-  </div>
-)}
-
-      </section>
-
-      <section className="profile-access">
-        <h2>Ask for Patient Profile Access</h2>
-        <div className="coming-soon">
-          <p>Coming soon... Doctors will be able to request patient profiles here.</p>
-        </div>
-      </section>
-
     </div>
   );
 }
