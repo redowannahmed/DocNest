@@ -79,8 +79,10 @@ export default function DoctorDashboard({ user }) {
   return (
     <div className="doctor-dashboard">
       <header className="doctor-header">
-        <h1>Doctor Dashboard</h1>
-        <p>Welcome, Dr. {user.name}</p>
+
+        <h1 className="title">Doctor Dashboard</h1>
+        <p>Welcome, <span className="doctor-name">Dr. {user.name}</span></p>
+
       </header>
 
       <div className="dashboard-content-row">
@@ -94,12 +96,14 @@ export default function DoctorDashboard({ user }) {
               onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
               required
             />
+
             <textarea
               placeholder="What's on your mind?"
               value={newPost.content}
               onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
               required
             />
+
             <button type="submit">Post</button>
           </form>
 
@@ -107,11 +111,10 @@ export default function DoctorDashboard({ user }) {
             {posts.map((post) => (
               <div
                 key={post._id}
-                className={`forum-post ${
-                  expandedPosts[post._id] ? "expanded" : ""
-                }`}
+                className={`forum-post ${expandedPosts[post._id] ? "expanded" : ""}`}
               >
                 <h3>{post.title}</h3>
+
                 <p>{post.content}</p>
 
                 {!expandedPosts[post._id] ? (
@@ -136,15 +139,19 @@ export default function DoctorDashboard({ user }) {
                     ? post.author.name
                     : "Unknown"}
                 </small>
+
                 <br />
+
                 <small className="post-date">
                   {new Date(post.createdAt).toLocaleString()}
                 </small>
+
                 <div className="comment-meta">
                   <small className="comment-count">
                     {post.comments.length} comment
                     {post.comments.length !== 1 ? "s" : ""}
                   </small>
+
                   <button
                     className="open-comments-btn"
                     onClick={() => openCommentsModal(post)}
@@ -158,12 +165,17 @@ export default function DoctorDashboard({ user }) {
 
           {activePost && (
             <div className="modal-overlay">
+
               <div className="modal">
+
                 <h3>{activePost.title}</h3>
+
                 <p>{activePost.content}</p>
+
                 <div className="modal-comments">
                   {activePost.comments.map((comment) => (
                     <div key={comment._id} className="forum-comment">
+
                       <strong>
                         Dr.{" "}
                         {comment.author && comment.author.name
@@ -171,13 +183,17 @@ export default function DoctorDashboard({ user }) {
                           : "Unknown"}
                         :
                       </strong>{" "}
+
                       {comment.text}
+
                       <div className="comment-time">
                         {timeAgo(comment.createdAt)}
                       </div>
+
                     </div>
                   ))}
                 </div>
+
                 <form
                   onSubmit={(e) => handleAddComment(e, activePost._id)}
                   className="comment-form"
@@ -194,29 +210,38 @@ export default function DoctorDashboard({ user }) {
                     }
                     required
                   />
+
                   <button type="submit">Comment</button>
                 </form>
+
                 <button
                   className="close-modal-btn"
                   onClick={closeCommentsModal}
                 >
                   Close
                 </button>
+
               </div>
+
             </div>
           )}
+
         </section>
 
         <section className="profile-access">
           <h2>Ask for Patient Profile Access</h2>
+
           <div className="coming-soon">
             <p>
               Coming soon... Doctors will be able to request access to patient's
               profile here.
             </p>
           </div>
+
         </section>
+
       </div>
+
     </div>
   );
 }
