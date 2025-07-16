@@ -193,6 +193,27 @@ router.post("/pinned-conditions", verifyToken, async (req, res) => {
   }
 })
 
+// ===== PINNED CONDITIONS CRUD =====
+
+router.delete("/pinned-conditions/:id", verifyToken, async (req, res) => {
+  try {
+    const condition = await PinnedCondition.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!condition) {
+      return res.status(404).json({ message: "Pinned condition not found" });
+    }
+
+    res.json({ message: "Pinned condition deleted successfully" });
+  } catch (error) {
+    console.error("Pinned condition delete error:", error.message);
+    res.status(500).json({ message: "Failed to delete pinned condition" });
+  }
+});
+
+
 // ===== MEDICATIONS CRUD =====
 
 router.get("/medications", verifyToken, async (req, res) => {
@@ -215,5 +236,26 @@ router.post("/medications", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Failed to save medication" })
   }
 })
+
+// ===== MEDICATIONS CRUD =====
+
+router.delete("/medications/:id", verifyToken, async (req, res) => {
+  try {
+    const medication = await Medication.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!medication) {
+      return res.status(404).json({ message: "Medication not found" });
+    }
+
+    res.json({ message: "Medication deleted successfully" });
+  } catch (error) {
+    console.error("Medication delete error:", error.message);
+    res.status(500).json({ message: "Failed to delete medication" });
+  }
+});
+
 
 module.exports = router

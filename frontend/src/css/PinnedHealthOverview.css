@@ -79,7 +79,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  box-shadow: 0 4px 16px rgba(35, 25, 66, 0.15); /* more depth */
+  box-shadow: 0 4px 16px rgba(35, 25, 66, 0.15);
 }
 
 .add-btn:hover {
@@ -114,6 +114,7 @@
   border-radius: 0.75rem;
   border: 1px solid rgba(231, 76, 60, 0.1);
   transition: all 0.15s ease;
+  position: relative;
 }
 
 .medication-item {
@@ -155,6 +156,13 @@
   color: #64748b;
 }
 
+.condition-actions,
+.medication-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .condition-status-badge {
   display: flex;
   align-items: center;
@@ -184,6 +192,32 @@
   background: rgba(231, 76, 60, 0.1);
   color: #e74c3c;
   border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+/* Delete Button Styles */
+.delete-btn {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.delete-btn:hover {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: rgba(231, 76, 60, 0.4);
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
 }
 
 .empty-state {
@@ -411,5 +445,10 @@
 
   .modal-actions {
     flex-direction: column;
+  }
+
+  .condition-actions,
+  .medication-actions {
+    gap: 0.25rem;
   }
 }
