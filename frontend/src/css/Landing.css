@@ -1,13 +1,17 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .landing-container {
   min-height: 100vh;
-  background: F5F8FF;
+  background: #ffffff;
   color: #1e293b;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  padding-top: 4rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  padding-top: 4rem; /* Space for fixed TopBar */
 }
 
 .landing-content {
@@ -17,11 +21,20 @@
   gap: 2rem;
   max-width: 75rem;
   width: 100%;
+  margin: 0 auto;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .landing-content {
     padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-content {
+    padding: 1rem 0.75rem;
     gap: 1.5rem;
   }
 }
