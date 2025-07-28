@@ -1,6 +1,6 @@
 .health-overview-container {
   width: 100%;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .health-cards-grid {
@@ -10,28 +10,28 @@
 }
 
 .health-card {
-  background: white;
-  border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 8px 32px rgba(35, 25, 66, 0.13), 0 2px 8px rgba(35, 25, 66, 0.08);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
 }
 
 .health-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .conditions-card {
-  --accent-color: #e74c3c;
-  --accent-color-light: #ec7063;
+  --accent-color: #667eea;
+  --accent-color-light: #764ba2;
 }
 
 .medications-card {
-  --accent-color: #3498db;
-  --accent-color-light: #5dade2;
+  --accent-color: #ff6b6b;
+  --accent-color-light: #feca57;
 }
 
 .card-header {
@@ -52,40 +52,40 @@
   width: 2.5rem;
   height: 2.5rem;
   background: linear-gradient(135deg, var(--accent-color), var(--accent-color-light));
-  border-radius: 0.75rem;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: white;
 }
 
 .card-title h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1e293b;
   margin: 0;
 }
 
 .add-btn {
-  background: #231942;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  box-shadow: 0 4px 16px rgba(35, 25, 66, 0.15);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .add-btn:hover {
-  background: #1a1533;
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 8px 24px rgba(35, 25, 66, 0.22);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn-icon {
@@ -109,23 +109,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), rgba(236, 112, 99, 0.05));
-  border-radius: 0.75rem;
-  border: 1px solid rgba(231, 76, 60, 0.1);
-  transition: all 0.15s ease;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.04), rgba(118, 75, 162, 0.04));
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
   position: relative;
 }
 
 .medication-item {
-  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(93, 173, 226, 0.05));
-  border-color: rgba(52, 152, 219, 0.1);
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.04), rgba(254, 202, 87, 0.04));
+  border-color: rgba(255, 107, 107, 0.1);
 }
 
 .condition-item:hover,
 .medication-item:hover {
-  transform: translateX(2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+.medication-item:hover {
+  border-color: rgba(255, 107, 107, 0.2);
 }
 
 .condition-info,
@@ -145,8 +150,8 @@
 .condition-name,
 .medication-name {
   font-weight: 600;
-  color: #2c3e50;
-  font-size: 0.875rem;
+  color: #1e293b;
+  font-size: 0.9rem;
 }
 
 .condition-date,
@@ -177,21 +182,21 @@
 }
 
 .status-mild {
-  background: rgba(241, 196, 15, 0.1);
+  background: linear-gradient(135deg, rgba(254, 202, 87, 0.1), rgba(255, 193, 7, 0.1));
   color: #f39c12;
-  border: 1px solid rgba(241, 196, 15, 0.2);
+  border: 1px solid rgba(254, 202, 87, 0.3);
 }
 
 .status-moderate {
-  background: rgba(230, 126, 34, 0.1);
-  color: #e67e22;
-  border: 1px solid rgba(230, 126, 34, 0.2);
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 165, 0, 0.1));
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .status-severe {
-  background: rgba(231, 76, 60, 0.1);
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(192, 57, 43, 0.1));
   color: #e74c3c;
-  border: 1px solid rgba(231, 76, 60, 0.2);
+  border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
 /* Delete Button Styles */
