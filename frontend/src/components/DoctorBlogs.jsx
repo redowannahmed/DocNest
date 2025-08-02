@@ -9,7 +9,6 @@ export default function DoctorBlogs() {
   const [activePost, setActivePost] = useState(null);
   const [commentInputs, setCommentInputs] = useState({});
   const [refreshing, setRefreshing] = useState(false);
-  const [debugInfo, setDebugInfo] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -39,11 +38,9 @@ export default function DoctorBlogs() {
     try {
       console.log("Fetching doctor posts...");
       console.log("Token:", token ? "Present" : "Missing");
-      setDebugInfo("Fetching posts...");
       
       // Check if we have a valid token
       if (!token) {
-        setDebugInfo("Error: No authentication token found");
         navigate("/signin");
         return;
       }
@@ -62,53 +59,39 @@ export default function DoctorBlogs() {
       if (allPostsResponse.ok) {
         const allPosts = await allPostsResponse.json();
         console.log("All posts received:", allPosts);
-        setDebugInfo(`Total posts: ${allPosts.length}`);
         
         if (allPosts.length === 0) {
-          setDebugInfo("No posts found in database");
           setPosts([]);
           return;
         }
         
-        // For debugging: temporarily show all posts to verify API is working
-        // TODO: Remove this and only show doctor posts in production
-        console.log("Showing all posts for debugging:", allPosts);
-        setDebugInfo(`Showing all ${allPosts.length} posts for debugging`);
-        setPosts(allPosts); // Temporarily show all posts
-        
-        // Original filtering logic (commented out for debugging)
-        /*
+        // Filter to show only doctor posts
         const doctorPosts = allPosts.filter(post => {
           console.log(`Post by ${post.author?.name} (role: ${post.author?.role})`);
           return post.author?.role === "doctor";
         });
         
         console.log("Filtered doctor posts:", doctorPosts);
-        setDebugInfo(`Doctor posts: ${doctorPosts.length} out of ${allPosts.length} total`);
         setPosts(doctorPosts);
-        */
       } else {
         console.error("Failed to fetch posts:", allPostsResponse.status, allPostsResponse.statusText);
         
         if (allPostsResponse.status === 401) {
-          setDebugInfo("Error: Unauthorized - Invalid token");
           // Token might be expired, redirect to login
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/signin");
           return;
         } else if (allPostsResponse.status === 403) {
-          setDebugInfo("Error: Forbidden - Access denied");
+          console.error("Access forbidden");
         } else {
           const errorText = await allPostsResponse.text();
           console.error("Error response:", errorText);
-          setDebugInfo(`Error: ${allPostsResponse.status} - ${errorText}`);
         }
       }
       
     } catch (error) {
       console.error("Error fetching doctor posts:", error);
-      setDebugInfo(`Network Error: ${error.message}`);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -211,12 +194,6 @@ export default function DoctorBlogs() {
       </header>
 
       <div className="blogs-content">
-        {debugInfo && (
-          <div className="debug-info">
-            <small>Debug: {debugInfo}</small>
-          </div>
-        )}
-        
         {posts.length === 0 ? (
           <div className="no-posts">
             <div className="no-posts-icon">
