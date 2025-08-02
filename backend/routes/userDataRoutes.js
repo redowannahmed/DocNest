@@ -249,7 +249,7 @@ router.delete("/medications/:id", verifyToken, async (req, res) => {
     if (!medication) {
       return res.status(404).json({ message: "Medication not found" });
     }
-
+    
     res.json({ message: "Medication deleted successfully" });
   } catch (error) {
     console.error("Medication delete error:", error.message);

@@ -88,7 +88,7 @@ const closeCommentsModal = () => {
     const diffMs = now - created;
     const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHrs / 24);
-
+    
     if (diffHrs < 1) return "just now";
     if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
