@@ -1,0 +1,146 @@
+/* Additional interactive effects for Landing page */
+
+/* Create floating orbs using multiple pseudo-elements on the landing container */
+.landing-container {
+  position: relative;
+}
+
+/* Floating orb 1 - using ::before on landing-content */
+.landing-content::before {
+  content: "";
+  position: fixed;
+  top: 25%;
+  left: 5%;
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(45deg, rgba(255, 107, 107, 0.12), rgba(254, 202, 87, 0.12));
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  animation: float1 18s ease-in-out infinite reverse;
+}
+
+/* Floating orb 2 - using ::after on landing-content */
+.landing-content::after {
+  content: "";
+  position: fixed;
+  bottom: 30%;
+  right: 15%;
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-radius: 50%;
+  filter: blur(70px);
+  z-index: -1;
+  pointer-events: none;
+  animation: float2 22s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  25% {
+    transform: translateY(-30px) translateX(20px) scale(1.1);
+  }
+  50% {
+    transform: translateY(20px) translateX(-15px) scale(0.9);
+  }
+  75% {
+    transform: translateY(-15px) translateX(10px) scale(1.05);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  33% {
+    transform: translateY(-40px) translateX(-20px) scale(1.2);
+  }
+  66% {
+    transform: translateY(25px) translateX(15px) scale(0.8);
+  }
+}
+
+/* Interactive sparkle effects */
+.landing-content > *:hover::before {
+  animation-duration: 4s;
+  opacity: 1;
+}
+
+/* Add sparkle animation to cards */
+@keyframes sparkle {
+  0%, 100% { 
+    box-shadow: 
+      0 0 5px rgba(102, 126, 234, 0.3),
+      0 0 10px rgba(102, 126, 234, 0.2),
+      0 0 15px rgba(102, 126, 234, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 0 10px rgba(254, 202, 87, 0.4),
+      0 0 20px rgba(254, 202, 87, 0.3),
+      0 0 30px rgba(254, 202, 87, 0.2);
+  }
+}
+
+/* Enhanced interaction feedback */
+.landing-content > *:hover {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+/* Breathing effect for the main container */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.005); }
+}
+
+.landing-container {
+  animation: breathe 8s ease-in-out infinite;
+}
+
+/* Dynamic color shifts */
+@keyframes colorShift {
+  0% { filter: hue-rotate(0deg); }
+  25% { filter: hue-rotate(5deg); }
+  50% { filter: hue-rotate(0deg); }
+  75% { filter: hue-rotate(-5deg); }
+  100% { filter: hue-rotate(0deg); }
+}
+
+.landing-content > *:nth-child(even) {
+  animation: colorShift 15s ease-in-out infinite;
+}
+
+/* Mouse movement responsive effects */
+@media (hover: hover) {
+  .landing-content > * {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .landing-content > *:hover {
+    filter: brightness(1.05) saturate(1.1);
+  }
+}
+
+/* Add ripple effect on click */
+.landing-content > *:active {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: translateY(-8px) scale(1);
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  70% {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
+  }
+  100% {
+    transform: translateY(-8px) scale(1);
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+  }
+}
