@@ -10,6 +10,7 @@ export default function DoctorDashboard({ user }) {
   const [commentInputs, setCommentInputs] = useState({});
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+  const [isCreatePostExpanded, setIsCreatePostExpanded] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -56,6 +57,7 @@ export default function DoctorDashboard({ user }) {
         const data = await res.json();
         setPosts([data, ...posts]);
         setNewPost({ title: "", content: "" });
+        setIsCreatePostExpanded(false); // Close the form after successful submission
         
         // Show success notification
         showToast("🎉 Blog post published successfully! It's now visible on the Doctor Blogs page.");
@@ -130,58 +132,92 @@ export default function DoctorDashboard({ user }) {
 
       <div className="dashboard-content-row">
         <section className="community-forum">
-          <div className="section-header">
-            <h2>Create Public Blog Post</h2>
-            <p className="section-description">
-              Share your medical expertise with patients and other healthcare professionals. 
-              Your posts will be visible on the public Doctor Blogs page.
-            </p>
+          
+          {/* Create Post Section */}
+          <div className="create-post-section">
+            {!isCreatePostExpanded ? (
+              <div className="create-post-prompt" onClick={() => setIsCreatePostExpanded(true)}>
+                <div className="prompt-icon">
+                  <i className="fas fa-plus-circle"></i>
+                </div>
+                <div className="prompt-content">
+                  <h3>Create Public Blog Post</h3>
+                  <p>Share your medical expertise with patients and healthcare professionals</p>
+                </div>
+                <div className="prompt-arrow">
+                  <i className="fas fa-chevron-right"></i>
+                </div>
+              </div>
+            ) : (
+              <div className="create-post-expanded">
+                <div className="section-header">
+                  <div className="header-with-close">
+                    <div>
+                      <h2>Create Public Blog Post</h2>
+                      <p className="section-description">
+                        Share your medical expertise with patients and other healthcare professionals. 
+                        Your posts will be visible on the public Doctor Blogs page.
+                      </p>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="close-form-btn"
+                      onClick={() => setIsCreatePostExpanded(false)}
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <form onSubmit={handleCreatePost} className="forum-form">
+                  <div className="form-group">
+                    <label htmlFor="blog-title">Blog Title</label>
+                    <input
+                      id="blog-title"
+                      placeholder="Enter an informative title for your blog post..."
+                      value={newPost.title}
+                      onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="blog-content">Blog Content</label>
+                    <textarea
+                      id="blog-content"
+                      placeholder="Share your medical insights, tips, or educational content..."
+                      value={newPost.content}
+                      onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                      required
+                      rows="8"
+                    />
+                    <small className="character-count">
+                      {newPost.content.length} characters
+                    </small>
+                  </div>
+
+                  <div className="form-actions">
+                    <button type="submit" className="publish-btn">
+                      <i className="fas fa-paper-plane"></i>
+                      Publish Blog Post
+                    </button>
+                    <button 
+                      type="button" 
+                      className="preview-btn"
+                      onClick={() => navigate('/doctor-blogs')}
+                    >
+                      <i className="fas fa-eye"></i>
+                      Preview Public Page
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
 
-          <form onSubmit={handleCreatePost} className="forum-form">
-            <div className="form-group">
-              <label htmlFor="blog-title">Blog Title</label>
-              <input
-                id="blog-title"
-                placeholder="Enter an informative title for your blog post..."
-                value={newPost.title}
-                onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="blog-content">Blog Content</label>
-              <textarea
-                id="blog-content"
-                placeholder="Share your medical insights, tips, or educational content..."
-                value={newPost.content}
-                onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                required
-                rows="8"
-              />
-              <small className="character-count">
-                {newPost.content.length} characters
-              </small>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="publish-btn">
-                <i className="fas fa-paper-plane"></i>
-                Publish Blog Post
-              </button>
-              <button 
-                type="button" 
-                className="preview-btn"
-                onClick={() => navigate('/doctor-blogs')}
-              >
-                <i className="fas fa-eye"></i>
-                Preview Public Page
-              </button>
-            </div>
-          </form>
-
-          <div className="published-blogs">
+          {/* Published Posts Section */}
+          <div className="published-posts-section">
+            <div className="published-blogs">
             <div className="blogs-header">
               <h3>Your Published Blog Posts</h3>
               <p>These posts are visible to all patients and healthcare professionals</p>
@@ -250,6 +286,7 @@ export default function DoctorDashboard({ user }) {
                 </div>
               ))
             )}
+          </div>
           </div>
 
         </section>
