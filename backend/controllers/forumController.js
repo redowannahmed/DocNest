@@ -18,8 +18,8 @@ exports.createPost = async (req, res) => {
 exports.getAllPosts = async (req, res) => {
   try {
     const posts = await ForumPost.find()
-      .populate("author", "name")
-      .populate("comments.author", "name")
+      .populate("author", "name role")
+      .populate("comments.author", "name role")
       .sort({ createdAt: -1 });
     res.json(posts);
   } catch (err) {
@@ -41,7 +41,28 @@ exports.addComment = async (req, res) => {
     });
 
     await post.save();
-    res.status(201).json(post);
+    
+    // Populate the updated post with author details including role
+    const populatedPost = await ForumPost.findById(postId)
+      .populate("author", "name role")
+      .populate("comments.author", "name role");
+      
+    res.status(201).json(populatedPost);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getDoctorPosts = async (req, res) => {
+  try {
+    const posts = await ForumPost.find()
+      .populate("author", "name role")
+      .populate("comments.author", "name role")
+      .sort({ createdAt: -1 });
+    
+    // Filter posts to only include those by doctors
+    const doctorPosts = posts.filter(post => post.author?.role === "doctor");
+    res.json(doctorPosts);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

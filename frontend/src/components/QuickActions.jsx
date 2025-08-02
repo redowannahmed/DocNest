@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import "../css/QuickActions.css"
 import MedicalHistoryDialog from "./MedicalHistoryDialog"
 
@@ -12,6 +13,7 @@ const actions = [
 
 export default function QuickActions({ onAddRecord }) {
   const [showAddRecordDialog, setShowAddRecordDialog] = useState(false)
+  const navigate = useNavigate()
 
   const handleActionClick = (action) => {
     switch (action) {
@@ -23,8 +25,8 @@ export default function QuickActions({ onAddRecord }) {
         console.log("Share access clicked")
         break
       case "doctor-blogs":
-        // Handle doctor blogs functionality
-        console.log("Doctor blogs clicked")
+        // Navigate to doctor blogs page
+        navigate("/doctor-blogs")
         break
       default:
         break

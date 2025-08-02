@@ -8,6 +8,7 @@ import SignUp from "./components/SignUp"
 import Homepage from "./components/Homepage" // Import Homepage
 import Landing from "./components/Landing" // Import Landing page
 import DoctorDashboard from "./components/DoctorDashboard"
+import DoctorBlogs from "./components/DoctorBlogs"
 
 function AppRouter() {
   const [user, setUser] = useState(() => {
@@ -54,6 +55,12 @@ function AppRouter() {
       <Route
         path="/doctor"
         element={user && user.role === "doctor" ? <DoctorDashboard user={user} /> : <Navigate to="/signin" />}
+      />
+
+      {/* Doctor Blogs route for patients */}
+      <Route
+        path="/doctor-blogs"
+        element={user ? <DoctorBlogs /> : <Navigate to="/signin" />}
       />
 
       {/* Catch all route */}
