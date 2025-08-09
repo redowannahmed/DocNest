@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import "../css/PinnedHealthOverview.css";
 
 export default function PinnedHealthOverview({ user, pinnedConditions = [], setPinnedConditions, medications = [], setMedications }) {
@@ -204,7 +205,7 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
       </div>
 
       {/* Condition Modal */}
-      {showConditionModal && (
+      {showConditionModal && createPortal(
         <div className="modal-overlay" onClick={() => setShowConditionModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
@@ -278,11 +279,12 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Medication Modal */}
-      {showMedicationModal && (
+      {showMedicationModal && createPortal(
         <div className="modal-overlay" onClick={() => setShowMedicationModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
@@ -368,7 +370,8 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
