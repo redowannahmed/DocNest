@@ -184,14 +184,36 @@ router.get("/pinned-conditions", verifyToken, async (req, res) => {
 
 router.post("/pinned-conditions", verifyToken, async (req, res) => {
   try {
-    const item = new PinnedCondition({ ...req.body, user: req.user.id })
-    await item.save()
-    res.status(201).json(item)
+    const { name, severity, prescriptionImg } = req.body;
+    
+    // Validate required fields
+    if (!name || !severity || !prescriptionImg) {
+      return res.status(400).json({ 
+        message: "Name, severity, and prescription image are required" 
+      });
+    }
+
+    // Validate prescription image format
+    if (!prescriptionImg.url || !prescriptionImg.publicId) {
+      return res.status(400).json({ 
+        message: "Invalid prescription image format" 
+      });
+    }
+
+    const item = new PinnedCondition({ 
+      name, 
+      severity, 
+      prescriptionImg,
+      user: req.user.id 
+    });
+    
+    await item.save();
+    res.status(201).json(item);
   } catch (error) {
-    console.error("Error saving pinned condition:", error.message)
-    res.status(500).json({ message: "Failed to save pinned condition" })
+    console.error("Error saving pinned condition:", error.message);
+    res.status(500).json({ message: "Failed to save pinned condition" });
   }
-})
+});
 
 // ===== PINNED CONDITIONS CRUD =====
 
@@ -204,6 +226,17 @@ router.delete("/pinned-conditions/:id", verifyToken, async (req, res) => {
 
     if (!condition) {
       return res.status(404).json({ message: "Pinned condition not found" });
+    }
+
+    // Delete associated Cloudinary image
+    if (condition.prescriptionImg && condition.prescriptionImg.publicId) {
+      const { cloudinary } = require('../utils/cloudinary');
+      try {
+        await cloudinary.uploader.destroy(condition.prescriptionImg.publicId);
+      } catch (error) {
+        console.error("Error deleting Cloudinary image:", error);
+        // Continue even if image deletion fails
+      }
     }
 
     res.json({ message: "Pinned condition deleted successfully" });
@@ -228,14 +261,37 @@ router.get("/medications", verifyToken, async (req, res) => {
 
 router.post("/medications", verifyToken, async (req, res) => {
   try {
-    const item = new Medication({ ...req.body, user: req.user.id })
-    await item.save()
-    res.status(201).json(item)
+    const { name, dosage, frequency, prescriptionImg } = req.body;
+    
+    // Validate required fields
+    if (!name || !prescriptionImg) {
+      return res.status(400).json({ 
+        message: "Name and prescription image are required" 
+      });
+    }
+
+    // Validate prescription image format
+    if (!prescriptionImg.url || !prescriptionImg.publicId) {
+      return res.status(400).json({ 
+        message: "Invalid prescription image format" 
+      });
+    }
+
+    const item = new Medication({ 
+      name, 
+      dosage, 
+      frequency, 
+      prescriptionImg,
+      user: req.user.id 
+    });
+    
+    await item.save();
+    res.status(201).json(item);
   } catch (error) {
-    console.error("Error saving medication:", error.message)
-    res.status(500).json({ message: "Failed to save medication" })
+    console.error("Error saving medication:", error.message);
+    res.status(500).json({ message: "Failed to save medication" });
   }
-})
+});
 
 // ===== MEDICATIONS CRUD =====
 
@@ -250,6 +306,17 @@ router.delete("/medications/:id", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Medication not found" });
     }
 
+    // Delete associated Cloudinary image
+    if (medication.prescriptionImg && medication.prescriptionImg.publicId) {
+      const { cloudinary } = require('../utils/cloudinary');
+      try {
+        await cloudinary.uploader.destroy(medication.prescriptionImg.publicId);
+      } catch (error) {
+        console.error("Error deleting Cloudinary image:", error);
+        // Continue even if image deletion fails
+      }
+    }
+    
     res.json({ message: "Medication deleted successfully" });
   } catch (error) {
     console.error("Medication delete error:", error.message);

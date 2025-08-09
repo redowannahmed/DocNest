@@ -1,13 +1,51 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import FileUpload from "./FileUpload";
 import "../css/PinnedHealthOverview.css";
 
 export default function PinnedHealthOverview({ user, pinnedConditions = [], setPinnedConditions, medications = [], setMedications }) {
-  const [conditionForm, setConditionForm] = useState({ name: "", severity: "", icon: "" });
-  const [medForm, setMedForm] = useState({ name: "", dosage: "", frequency: "", icon: "" });
+  const [conditionForm, setConditionForm] = useState({ name: "", severity: "" });
+  const [medForm, setMedForm] = useState({ name: "", dosage: "", frequency: "" });
   const [showConditionModal, setShowConditionModal] = useState(false);
   const [showMedicationModal, setShowMedicationModal] = useState(false);
   const [hoveredCondition, setHoveredCondition] = useState(null);
   const [hoveredMedication, setHoveredMedication] = useState(null);
+  
+  // File upload states
+  const [conditionPrescriptionFiles, setConditionPrescriptionFiles] = useState([]);
+  const [medicationPrescriptionFiles, setMedicationPrescriptionFiles] = useState([]);
+  
+  // Image viewing states
+  const [viewingImage, setViewingImage] = useState(null);
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+
+  // Helper functions to handle modal close and reset
+  const closeConditionModal = () => {
+    setShowConditionModal(false);
+    setConditionForm({ name: "", severity: "" });
+    setConditionPrescriptionFiles([]);
+  };
+
+  const closeMedicationModal = () => {
+    setShowMedicationModal(false);
+    setMedForm({ name: "", dosage: "", frequency: "" });
+    setMedicationPrescriptionFiles([]);
+  };
+
+  // Image viewing functions
+  const viewPrescriptionImage = (imageUrl, type, itemName) => {
+    setViewingImage({
+      url: imageUrl,
+      type: type,
+      itemName: itemName
+    });
+    setImageViewerOpen(true);
+  };
+
+  const closeImageViewer = () => {
+    setViewingImage(null);
+    setImageViewerOpen(false);
+  };
 
   const token = localStorage.getItem("token");
 
@@ -31,28 +69,86 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
 
   const addCondition = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/userdata/pinned-conditions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: JSON.stringify(conditionForm),
-    });
-    const data = await res.json();
-    setPinnedConditions([...pinnedConditions, data]);
-    setConditionForm({ name: "", severity: "", icon: "" });
-    setShowConditionModal(false);
+    
+    // Validate prescription upload
+    if (!conditionPrescriptionFiles || conditionPrescriptionFiles.length === 0) {
+      alert("Please upload a prescription image before adding the condition.");
+      return;
+    }
+
+    const prescriptionImg = conditionPrescriptionFiles[0]; // Take the first uploaded file
+    
+    const conditionData = {
+      ...conditionForm,
+      prescriptionImg: {
+        url: prescriptionImg.url,
+        publicId: prescriptionImg.publicId
+      }
+    };
+
+    try {
+      const res = await fetch("/api/userdata/pinned-conditions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: JSON.stringify(conditionData),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to add condition");
+      }
+      
+      const data = await res.json();
+      setPinnedConditions([...pinnedConditions, data]);
+      setConditionForm({ name: "", severity: "" });
+      setConditionPrescriptionFiles([]);
+      setShowConditionModal(false);
+    } catch (error) {
+      console.error("Error adding condition:", error);
+      alert("Failed to add condition: " + error.message);
+    }
   };
 
   const addMedication = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/userdata/medications", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: JSON.stringify(medForm),
-    });
-    const data = await res.json();
-    setMedications([...medications, data]);
-    setMedForm({ name: "", dosage: "", frequency: "", icon: "" });
-    setShowMedicationModal(false);
+    
+    // Validate prescription upload
+    if (!medicationPrescriptionFiles || medicationPrescriptionFiles.length === 0) {
+      alert("Please upload a prescription image before adding the medication.");
+      return;
+    }
+
+    const prescriptionImg = medicationPrescriptionFiles[0]; // Take the first uploaded file
+    
+    const medicationData = {
+      ...medForm,
+      prescriptionImg: {
+        url: prescriptionImg.url,
+        publicId: prescriptionImg.publicId
+      }
+    };
+
+    try {
+      const res = await fetch("/api/userdata/medications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: JSON.stringify(medicationData),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to add medication");
+      }
+      
+      const data = await res.json();
+      setMedications([...medications, data]);
+      setMedForm({ name: "", dosage: "", frequency: "" });
+      setMedicationPrescriptionFiles([]);
+      setShowMedicationModal(false);
+    } catch (error) {
+      console.error("Error adding medication:", error);
+      alert("Failed to add medication: " + error.message);
+    }
   };
 
   const deleteCondition = async (conditionId) => {
@@ -122,7 +218,22 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                   >
                     <div className="condition-info">
                       <div className="condition-details">
-                        <div className="condition-name">{condition.name}</div>
+                        <div className="condition-name">
+                          {condition.name}
+                          {condition.prescriptionImg && (
+                            <button 
+                              className="prescription-indicator clickable" 
+                              title="View prescription"
+                              onClick={() => viewPrescriptionImage(
+                                condition.prescriptionImg.url, 
+                                'Chronic Condition', 
+                                condition.name
+                              )}
+                            >
+                              📋
+                            </button>
+                          )}
+                        </div>
                         <div className="condition-date">{condition.since ? `Since ${condition.since}` : ""}</div>
                       </div>
                     </div>
@@ -133,13 +244,28 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                         </span>
                       </div>
                       {hoveredCondition === condition._id && (
-                        <button 
-                          className="delete-btn"
-                          onClick={() => deleteCondition(condition._id)}
-                          title="Delete condition"
-                        >
-                          🗑️
-                        </button>
+                        <>
+                          {condition.prescriptionImg && (
+                            <button 
+                              className="view-prescription-btn"
+                              onClick={() => viewPrescriptionImage(
+                                condition.prescriptionImg.url, 
+                                'Chronic Condition', 
+                                condition.name
+                              )}
+                              title="View prescription"
+                            >
+                              👁️
+                            </button>
+                          )}
+                          <button 
+                            className="delete-btn"
+                            onClick={() => deleteCondition(condition._id)}
+                            title="Delete condition"
+                          >
+                            🗑️
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -179,20 +305,50 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                   >
                     <div className="medication-info">
                       <div className="medication-details">
-                        <div className="medication-name">{med.name}</div>
+                        <div className="medication-name">
+                          {med.name}
+                          {med.prescriptionImg && (
+                            <button 
+                              className="prescription-indicator clickable" 
+                              title="View prescription"
+                              onClick={() => viewPrescriptionImage(
+                                med.prescriptionImg.url, 
+                                'Medication', 
+                                med.name
+                              )}
+                            >
+                              📋
+                            </button>
+                          )}
+                        </div>
                         <div className="medication-dosage">{med.dosage} • {med.frequency}</div>
                         <div className="medication-date">{med.since ? `Since ${med.since}` : ""}</div>
                       </div>
                     </div>
                     <div className="medication-actions">
                       {hoveredMedication === med._id && (
-                        <button 
-                          className="delete-btn"
-                          onClick={() => deleteMedication(med._id)}
-                          title="Delete medication"
-                        >
-                          🗑️
-                        </button>
+                        <>
+                          {med.prescriptionImg && (
+                            <button 
+                              className="view-prescription-btn"
+                              onClick={() => viewPrescriptionImage(
+                                med.prescriptionImg.url, 
+                                'Medication', 
+                                med.name
+                              )}
+                              title="View prescription"
+                            >
+                              👁️
+                            </button>
+                          )}
+                          <button 
+                            className="delete-btn"
+                            onClick={() => deleteMedication(med._id)}
+                            title="Delete medication"
+                          >
+                            🗑️
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -204,14 +360,14 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
       </div>
 
       {/* Condition Modal */}
-      {showConditionModal && (
-        <div className="modal-overlay" onClick={() => setShowConditionModal(false)}>
+      {showConditionModal && createPortal(
+        <div className="modal-overlay" onClick={closeConditionModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add Chronic Condition</h3>
               <button 
                 className="modal-close"
-                onClick={() => setShowConditionModal(false)}
+                onClick={closeConditionModal}
               >
                 ×
               </button>
@@ -241,34 +397,24 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                 </select>
               </div>
               <div className="form-group">
-                <label>Icon (Optional)</label>
-                <div className="icon-selector">
-                  <input 
-                    type="text"
-                    placeholder="Choose an emoji or leave empty"
-                    value={conditionForm.icon} 
-                    onChange={e => setConditionForm({ ...conditionForm, icon: e.target.value })} 
-                    maxLength="2"
-                  />
-                  <div className="suggested-icons">
-                    {['🫀', '🩺', '💊', '🌡️', '🧬', '⚕️'].map(icon => (
-                      <button
-                        key={icon}
-                        type="button"
-                        className="icon-option"
-                        onClick={() => setConditionForm({ ...conditionForm, icon })}
-                      >
-                        {icon}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <label>Prescription Image *</label>
+                <FileUpload
+                  onFilesUploaded={setConditionPrescriptionFiles}
+                  uploadType="prescription"
+                  maxFiles={1}
+                  label="Upload Prescription Image"
+                  accept="image/jpeg,image/jpg,image/png"
+                  initialFiles={conditionPrescriptionFiles}
+                />
+                <p className="upload-requirement">
+                  * Prescription image is required to add a chronic condition
+                </p>
               </div>
               <div className="modal-actions">
                 <button 
                   type="button" 
                   className="btn-secondary"
-                  onClick={() => setShowConditionModal(false)}
+                  onClick={closeConditionModal}
                 >
                   Cancel
                 </button>
@@ -278,18 +424,19 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Medication Modal */}
-      {showMedicationModal && (
-        <div className="modal-overlay" onClick={() => setShowMedicationModal(false)}>
+      {showMedicationModal && createPortal(
+        <div className="modal-overlay" onClick={closeMedicationModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add Medication</h3>
               <button 
                 className="modal-close"
-                onClick={() => setShowMedicationModal(false)}
+                onClick={closeMedicationModal}
               >
                 ×
               </button>
@@ -331,34 +478,24 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
                 </div>
               </div>
               <div className="form-group">
-                <label>Icon (Optional)</label>
-                <div className="icon-selector">
-                  <input 
-                    type="text"
-                    placeholder="Choose an emoji or leave empty"
-                    value={medForm.icon} 
-                    onChange={e => setMedForm({ ...medForm, icon: e.target.value })} 
-                    maxLength="2"
-                  />
-                  <div className="suggested-icons">
-                    {['💊', '💉', '🧪', '🩹', '🧴', '⚕️'].map(icon => (
-                      <button
-                        key={icon}
-                        type="button"
-                        className="icon-option"
-                        onClick={() => setMedForm({ ...medForm, icon })}
-                      >
-                        {icon}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <label>Prescription Image *</label>
+                <FileUpload
+                  onFilesUploaded={setMedicationPrescriptionFiles}
+                  uploadType="prescription"
+                  maxFiles={1}
+                  label="Upload Prescription Image"
+                  accept="image/jpeg,image/jpg,image/png"
+                  initialFiles={medicationPrescriptionFiles}
+                />
+                <p className="upload-requirement">
+                  * Prescription image is required to add a medication
+                </p>
               </div>
               <div className="modal-actions">
                 <button 
                   type="button" 
                   className="btn-secondary"
-                  onClick={() => setShowMedicationModal(false)}
+                  onClick={closeMedicationModal}
                 >
                   Cancel
                 </button>
@@ -368,7 +505,52 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Image Viewer Modal */}
+      {imageViewerOpen && viewingImage && createPortal(
+        <div className="modal-overlay image-viewer-overlay" onClick={closeImageViewer}>
+          <div className="image-viewer-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="image-viewer-header">
+              <h3>Prescription for {viewingImage.itemName}</h3>
+              <span className="image-type-badge">{viewingImage.type}</span>
+              <button 
+                className="modal-close"
+                onClick={closeImageViewer}
+              >
+                ×
+              </button>
+            </div>
+            <div className="image-viewer-content">
+              <img 
+                src={viewingImage.url} 
+                alt={`Prescription for ${viewingImage.itemName}`}
+                className="prescription-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = '<p class="image-error">Failed to load image</p>';
+                }}
+              />
+            </div>
+            <div className="image-viewer-actions">
+              <button 
+                className="btn-secondary"
+                onClick={() => window.open(viewingImage.url, '_blank')}
+              >
+                Open in New Tab
+              </button>
+              <button 
+                className="btn-primary"
+                onClick={closeImageViewer}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
