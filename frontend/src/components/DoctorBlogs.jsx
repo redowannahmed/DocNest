@@ -11,6 +11,7 @@ export default function DoctorBlogs() {
   const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null"); // Added: get current user to determine proper back navigation
 
   useEffect(() => {
     fetchDoctorPosts();
@@ -174,7 +175,7 @@ export default function DoctorBlogs() {
     <div className="doctor-blogs">
       <header className="doctor-blogs-header">
         <div className="header-content">
-          <button onClick={() => navigate("/dashboard")} className="back-button">
+          <button onClick={() => navigate(user?.role === 'doctor' ? '/doctor' : '/dashboard')} className="back-button">
             <i className="fas fa-arrow-left"></i>
             Back to Dashboard
           </button>
