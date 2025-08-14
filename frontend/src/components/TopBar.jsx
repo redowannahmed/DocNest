@@ -1,8 +1,56 @@
+import { useState, useEffect } from "react"
 import "../css/TopBar.css"
 
 export default function TopBar({ user }) {
+  const [isHidden, setIsHidden] = useState(false)
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      
+      // Hide topbar when scrolling down, show when scrolling up
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsHidden(true)
+      } else if (currentScrollY < lastScrollY) {
+        setIsHidden(false)
+      }
+      
+      setLastScrollY(currentScrollY)
+    }
+
+    // Check for image modals or dialogs that should hide the topbar
+    const checkForModals = () => {
+      const modals = document.querySelectorAll('.image-modal-overlay, .dialog-overlay, .modal-overlay')
+      const hasVisibleModal = Array.from(modals).some(modal => 
+        window.getComputedStyle(modal).display !== 'none'
+      )
+      setIsHidden(hasVisibleModal)
+    }
+
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    // Add mutation observer to detect modal changes
+    const observer = new MutationObserver(checkForModals)
+    observer.observe(document.body, { 
+      childList: true, 
+      subtree: true, 
+      attributes: true, 
+      attributeFilter: ['class', 'style'] 
+    })
+    
+    // Initial check
+    checkForModals()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      observer.disconnect()
+    }
+  }, [lastScrollY])
+
   return (
-    <header className="top-bar">
+    <header className={`top-bar ${isHidden ? 'hidden' : ''}`}>
       <div className="top-bar-content">
         <div className="logo-section">
           <div className="logo">
