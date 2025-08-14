@@ -48,14 +48,19 @@ exports.register = async (req, res) => {
         email = email ? email.trim().toLowerCase() : "";
         location = location ? location.trim() : "";
         gender = gender ? gender.trim().toLowerCase() : "";
+        role = role === "doctor" ? "doctor" : "patient"; // Normalize role
 
         // Validate input
         const error = validateRegistration({ name, email, password, age, gender, location, role });
         if (error) return res.status(400).json({ message: error });
 
-        // Check duplicate email
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: "User already exists" });
+        // Check duplicate email + role combination
+        const existingUser = await User.findOne({ email, role });
+        if (existingUser) {
+            return res.status(400).json({ 
+                message: `A ${role} account with this email already exists` 
+            });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -66,7 +71,7 @@ exports.register = async (req, res) => {
             age: age !== undefined && String(age).trim() !== "" ? Number(age) : undefined,
             gender,
             location,
-            role: role === "doctor" ? "doctor" : "patient"
+            role
         });
 
         await newUser.save();
@@ -78,23 +83,44 @@ exports.register = async (req, res) => {
             user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role }
         });
     } catch (err) {
+        // Handle duplicate key error specifically
+        if (err.code === 11000) {
+            const role = err.keyValue?.role || "unknown";
+            return res.status(400).json({ 
+                message: `A ${role} account with this email already exists` 
+            });
+        }
         res.status(500).json({ message: err.message });
     }
 };
 
 exports.login = async (req, res) => {
     try {
-        let { email, password } = req.body;
+        let { email, password, role } = req.body;
         email = email ? email.trim().toLowerCase() : "";
+        role = role === "doctor" ? "doctor" : "patient"; // Normalize role
 
         if (!validator.isEmail(email)) return res.status(400).json({ message: "Invalid email or password" });
         if (!password || password.length < 8) return res.status(400).json({ message: "Invalid email or password" });
+        if (!role) return res.status(400).json({ message: "Please select a role" });
 
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: "Invalid email or password" });
+        // Find user with specific email AND role combination
+        const user = await User.findOne({ email, role });
+        if (!user) {
+            return res.status(400).json({ 
+                message: `No ${role} account found with this email address` 
+            });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
+
+        // Verify that the user's role matches the requested login role
+        if (user.role !== role) {
+            return res.status(400).json({ 
+                message: `Account role mismatch. This email is registered as a ${user.role}, not a ${role}` 
+            });
+        }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 

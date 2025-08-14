@@ -22,7 +22,11 @@ const SignIn = ({ onLogin }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+        body: JSON.stringify({ 
+          email: email.trim().toLowerCase(), 
+          password,
+          role 
+        }),
       })
 
       const data = await response.json()
