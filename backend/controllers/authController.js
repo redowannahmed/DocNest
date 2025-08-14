@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
         email = email ? email.trim().toLowerCase() : "";
         location = location ? location.trim() : "";
         gender = gender ? gender.trim().toLowerCase() : "";
-        role = role === "doctor" ? "doctor" : "patient"; // Normalize role
+        role = role && role.toLowerCase() === "doctor" ? "doctor" : "patient"; // Normalize role
 
         // Validate input
         const error = validateRegistration({ name, email, password, age, gender, location, role });
@@ -98,7 +98,7 @@ exports.login = async (req, res) => {
     try {
         let { email, password, role } = req.body;
         email = email ? email.trim().toLowerCase() : "";
-        role = role === "doctor" ? "doctor" : "patient"; // Normalize role
+        role = role && role.toLowerCase() === "doctor" ? "doctor" : "patient"; // Normalize role
 
         if (!validator.isEmail(email)) return res.status(400).json({ message: "Invalid email or password" });
         if (!password || password.length < 8) return res.status(400).json({ message: "Invalid email or password" });

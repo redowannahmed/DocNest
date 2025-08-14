@@ -49,7 +49,14 @@ function AppRouter() {
       <Route path="/signup" element={<SignUp onRegister={handleRegister} />} />
 
       {/* Dashboard route - Landing component for authenticated users */}
-      <Route path="/dashboard" element={user ? <Landing user={user} setUser={setUser} /> : <Navigate to="/signin" />} />
+      <Route
+        path="/dashboard"
+        element={
+          user && user.role === "patient"
+            ? <Landing user={user} setUser={setUser} />
+            : <Navigate to={user ? (user.role === "doctor" ? "/doctor" : "/signin") : "/signin"} />
+        }
+      />
 
       {/* Doctor dashboard */}
       <Route

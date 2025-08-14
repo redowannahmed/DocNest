@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const userDataRoutes = require("./routes/userDataRoutes");
 const forumRoutes = require("./routes/forumRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const patientAccessRoutes = require("./routes/patientAccessRoutes");
 const { verifyToken } = require("./middleware/authMiddleware");
 const User = require("./models/User");
 
@@ -23,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/userdata", userDataRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/patient-access", patientAccessRoutes);
 
 
 // Add route to get current user info

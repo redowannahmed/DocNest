@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "../css/QuickActions.css"
 import MedicalHistoryDialog from "./MedicalHistoryDialog"
+import ShareAccessModal from "./ShareAccessModal"
 
 const actions = [
   { label: "Add New Record", icon: "➕", action: "add-record" },
@@ -13,6 +14,7 @@ const actions = [
 
 export default function QuickActions({ onAddRecord }) {
   const [showAddRecordDialog, setShowAddRecordDialog] = useState(false)
+  const [showShareAccessModal, setShowShareAccessModal] = useState(false)
   const navigate = useNavigate()
 
   const handleActionClick = (action) => {
@@ -21,8 +23,7 @@ export default function QuickActions({ onAddRecord }) {
         setShowAddRecordDialog(true)
         break
       case "share-access":
-        // Handle share access functionality
-        console.log("Share access clicked")
+        setShowShareAccessModal(true)
         break
       case "doctor-blogs":
         // Navigate to doctor blogs page
@@ -90,6 +91,11 @@ export default function QuickActions({ onAddRecord }) {
         isOpen={showAddRecordDialog}
         onClose={() => setShowAddRecordDialog(false)}
         onSave={handleSaveRecord}
+      />
+
+      <ShareAccessModal
+        isOpen={showShareAccessModal}
+        onClose={() => setShowShareAccessModal(false)}
       />
     </>
   )

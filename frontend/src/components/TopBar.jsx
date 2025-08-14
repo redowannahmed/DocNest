@@ -57,7 +57,7 @@ export default function TopBar({ user }) {
             <span className="logo-text">Doc</span>
           </div>
           <div className="hidden md:block h-6 w-px bg-slate-300 mx-4"></div>
-          <div className="hidden md:block text-sm text-slate-600 font-medium">Patient Dashboard</div>
+          <div className="hidden md:block text-sm text-slate-600 font-medium">{user?.role === 'doctor' ? 'Doctor Dashboard' : 'Patient Dashboard'}</div>
         </div>
 
         <div className="center-section">

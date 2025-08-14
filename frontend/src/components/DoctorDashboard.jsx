@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/DoctorDashboard.css";
+import PatientProfileView from "./PatientProfileView";
 
 export default function DoctorDashboard({ user }) {
   const [posts, setPosts] = useState([]);
@@ -11,6 +12,11 @@ export default function DoctorDashboard({ user }) {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [isCreatePostExpanded, setIsCreatePostExpanded] = useState(false);
+  const [accessCode, setAccessCode] = useState("");
+  const [accessCodeError, setAccessCodeError] = useState("");
+  const [loadingAccess, setLoadingAccess] = useState(false);
+  const [patientData, setPatientData] = useState(null);
+  const [showPatientProfile, setShowPatientProfile] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -108,6 +114,49 @@ export default function DoctorDashboard({ user }) {
     if (diffHrs < 1) return "just now";
     if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  };
+
+  const handleAccessPatient = async (e) => {
+    e.preventDefault();
+    if (!accessCode.trim()) {
+      setAccessCodeError("Please enter an access code");
+      return;
+    }
+
+    setLoadingAccess(true);
+    setAccessCodeError("");
+
+    try {
+      const response = await fetch("/api/patient-access/access-patient-profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({ accessCode: accessCode.trim() }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPatientData(data);
+        setShowPatientProfile(true);
+        setAccessCode("");
+        showToast(`✅ Successfully accessed ${data.patient.name}'s profile`);
+      } else {
+        const errorData = await response.json();
+        setAccessCodeError(errorData.message || "Invalid access code");
+      }
+    } catch (error) {
+      console.error("Error accessing patient profile:", error);
+      setAccessCodeError("Failed to access patient profile. Please try again.");
+    } finally {
+      setLoadingAccess(false);
+    }
+  };
+
+  const closePatientProfile = () => {
+    setShowPatientProfile(false);
+    setPatientData(null);
   };
 
   return (
@@ -292,15 +341,56 @@ export default function DoctorDashboard({ user }) {
         </section>
 
         <section className="profile-access">
-          <h2>Ask for Patient Profile Access</h2>
+          <h2>Patient Profile Access</h2>
+          <p className="access-description">
+            Enter the access code provided by a patient to view their medical profile in read-only mode.
+          </p>
 
-          <div className="coming-soon">
-            <p>
-              Coming soon... Doctors will be able to request access to patient's
-              profile here.
-            </p>
+          <form onSubmit={handleAccessPatient} className="access-form">
+            <div className="form-group">
+              <label htmlFor="access-code">Patient Access Code</label>
+              <input
+                type="text"
+                id="access-code"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value)}
+                placeholder="Enter 6-digit access code"
+                maxLength="6"
+                className={accessCodeError ? "error" : ""}
+              />
+              {accessCodeError && (
+                <div className="error-message">{accessCodeError}</div>
+              )}
+            </div>
+            
+            <button 
+              type="submit" 
+              className="access-btn"
+              disabled={loadingAccess || !accessCode.trim()}
+            >
+              {loadingAccess ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Accessing...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-key"></i>
+                  Access Patient Profile
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="access-info">
+            <h4>How it works:</h4>
+            <ul>
+              <li>Patients generate temporary access codes from their dashboard</li>
+              <li>Access codes expire after 30 minutes for security</li>
+              <li>You'll have read-only access to their medical history</li>
+              <li>Patients can choose to hide specific medical visits</li>
+            </ul>
           </div>
-
         </section>
 
       </div>
@@ -365,6 +455,19 @@ export default function DoctorDashboard({ user }) {
             {notificationMessage}
           </div>
         </div>
+      )}
+
+      {/* Patient Profile View */}
+      {showPatientProfile && patientData && (
+        <PatientProfileView
+          patient={patientData.patient}
+          medicalHistory={patientData.medicalHistory}
+          pinnedConditions={patientData.pinnedConditions}
+          medications={patientData.medications}
+          accessExpiresAt={patientData.accessExpiresAt}
+          hiddenVisitCount={patientData.hiddenVisitCount}
+          onClose={closePatientProfile}
+        />
       )}
 
     </div>
