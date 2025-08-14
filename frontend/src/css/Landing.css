@@ -11,7 +11,7 @@
   color: #1e293b;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  padding-top: 7rem; /* Space for larger fixed TopBar with margin */
+  padding-top: 6rem; /* Reduced space for smaller fixed TopBar */
 }
 
 .landing-content {

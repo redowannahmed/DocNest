@@ -30,6 +30,11 @@ export default function Landing({ user: initialUser, setUser }) {
           setUserState(data)
           setUser && setUser(data)
           localStorage.setItem("user", JSON.stringify(data))
+          // If a doctor somehow hits the patient dashboard, redirect them
+          if (data.role === "doctor") {
+            navigate("/doctor")
+            return
+          }
         } else {
           localStorage.removeItem("user")
           navigate("/signin")

@@ -46,6 +46,11 @@ const SignUp = ({ onRegister }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Registration failed");
       setSuccess(true);
+      // If API returns token/user, store them (current API returns token only in login; keep future-proof)
+      if (data?.user && data?.token) {
+        localStorage.setItem("user", JSON.stringify(data.user))
+        localStorage.setItem("token", data.token)
+      }
       setTimeout(() => navigate("/signin"), 1500);
     } catch (err) {
       setError(err.message);
