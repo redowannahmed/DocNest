@@ -24,8 +24,8 @@
   margin: 0 auto;
 }
 
-/* Add purple shadows to all landing page components */
-.landing-content > * {
+/* Add purple shadows to all landing page components except medical-history */
+.landing-content > *:not(.medical-history) {
   background: rgba(255, 255, 255, 0.98);
   border-radius: 16px;
   border: 1px solid rgba(102, 126, 234, 0.1);
@@ -36,7 +36,7 @@
   transition: all 0.3s ease;
 }
 
-.landing-content > *:hover {
+.landing-content > *:not(.medical-history):hover {
   transform: translateY(-4px);
   box-shadow: 
     0 8px 30px rgba(102, 126, 234, 0.23),
