@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import "../css/TopBar.css"
 
-export default function TopBar({ user }) {
+export default function TopBar({ user, onLogout }) {
   const [isHidden, setIsHidden] = useState(false)
   const [lastScrollY, setLastScrollY] = useState(0)
 
@@ -72,6 +72,11 @@ export default function TopBar({ user }) {
           <button className="icon-button">
             <i className="fa fa-cog"></i>
           </button>
+          {onLogout && (
+            <button className="icon-button logout-button" onClick={onLogout} title="Logout">
+              <i className="fa fa-sign-out-alt"></i>
+            </button>
+          )}
           <div className="user-avatar">
             <span>{user?.name ? user.name.charAt(0).toUpperCase() : "U"}</span>
           </div>

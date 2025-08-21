@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import FileUpload from "./FileUpload";
 import "../css/PinnedHealthOverview.css";
+import sessionManager from "../utils/SessionManager";
 
 export default function PinnedHealthOverview({ user, pinnedConditions = [], setPinnedConditions, medications = [], setMedications }) {
   const [conditionForm, setConditionForm] = useState({ name: "", severity: "" });
@@ -47,7 +48,7 @@ export default function PinnedHealthOverview({ user, pinnedConditions = [], setP
     setImageViewerOpen(false);
   };
 
-  const token = localStorage.getItem("token");
+  const token = sessionManager.getToken();
 
   // Fetch user's conditions and medications on mount
   useEffect(() => {

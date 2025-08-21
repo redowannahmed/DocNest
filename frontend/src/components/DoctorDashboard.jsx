@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/DoctorDashboard.css";
 import PatientProfileView from "./PatientProfileView";
+import sessionManager from "../utils/SessionManager";
 
-export default function DoctorDashboard({ user }) {
+export default function DoctorDashboard({ user, onLogout }) {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [expandedPosts, setExpandedPosts] = useState({});
@@ -20,7 +21,7 @@ export default function DoctorDashboard({ user }) {
   const [editingPost, setEditingPost] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", content: "" });
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = sessionManager.getToken();
 
   const showToast = (message) => {
     setNotificationMessage(message);
@@ -247,6 +248,16 @@ export default function DoctorDashboard({ user }) {
               <i className="fas fa-external-link-alt"></i>
               View Public Blogs
             </button>
+            {onLogout && (
+              <button 
+                className="logout-btn"
+                onClick={onLogout}
+                title="Logout"
+              >
+                <i className="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            )}
           </div>
         </div>
       </header>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/DoctorBlogs.css";
+import sessionManager from "../utils/SessionManager";
 
 export default function DoctorBlogs() {
   const [posts, setPosts] = useState([]);
@@ -10,8 +11,8 @@ export default function DoctorBlogs() {
   const [commentInputs, setCommentInputs] = useState({});
   const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "null"); // Added: get current user to determine proper back navigation
+  const token = sessionManager.getToken();
+  const user = sessionManager.getUser(); // Updated: get current user to determine proper back navigation
 
   useEffect(() => {
     fetchDoctorPosts();
@@ -79,8 +80,7 @@ export default function DoctorBlogs() {
         
         if (allPostsResponse.status === 401) {
           // Token might be expired, redirect to login
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
+          sessionManager.logout();
           navigate("/signin");
           return;
         } else if (allPostsResponse.status === 403) {

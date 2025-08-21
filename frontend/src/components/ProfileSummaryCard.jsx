@@ -1,6 +1,7 @@
 // ProfileSummaryCard.jsx
 import "../css/ProfileSummaryCard.css";
 import React, { useState } from "react";
+import sessionManager from "../utils/SessionManager";
 
 export default function ProfileSummaryCard({ user, setUser }) {
   const [editMode, setEditMode] = useState(false);
@@ -10,7 +11,7 @@ export default function ProfileSummaryCard({ user, setUser }) {
     gender: user.gender,
     location: user.location,
   });
-  const token = localStorage.getItem("token");
+  const token = sessionManager.getToken();
 
   const handleSave = async (e) => {
     e.preventDefault();

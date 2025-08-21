@@ -8,8 +8,9 @@ import ProfileSummaryCard from "./ProfileSummaryCard"
 import PinnedHealthOverview from "./PinnedHealthOverview"
 import QuickActions from "./QuickActions"
 import MedicalHistory from "./MedicalHistory"
+import sessionManager from "../utils/SessionManager"
 
-export default function Landing({ user: initialUser, setUser }) {
+export default function Landing({ user: initialUser, setUser, onLogout }) {
   const [user, setUserState] = useState(initialUser)
   const [pinnedConditions, setPinnedConditions] = useState([])
   const [medications, setMedications] = useState([])
@@ -17,7 +18,7 @@ export default function Landing({ user: initialUser, setUser }) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = sessionManager.getToken()
     if (!token) {
       navigate("/signin")
       return
@@ -29,19 +30,19 @@ export default function Landing({ user: initialUser, setUser }) {
         if (data && data._id) {
           setUserState(data)
           setUser && setUser(data)
-          localStorage.setItem("user", JSON.stringify(data))
+          sessionManager.setUser(data)
           // If a doctor somehow hits the patient dashboard, redirect them
           if (data.role === "doctor") {
             navigate("/doctor")
             return
           }
         } else {
-          localStorage.removeItem("user")
+          sessionManager.logout()
           navigate("/signin")
         }
       })
       .catch(() => {
-        localStorage.removeItem("user")
+        sessionManager.logout()
         navigate("/signin")
       })
     fetch("/api/userdata/pinned-conditions", { headers: { Authorization: token } })
@@ -63,7 +64,7 @@ export default function Landing({ user: initialUser, setUser }) {
 
   return (
     <div className="landing-container">
-      <TopBar user={user} />
+      <TopBar user={user} onLogout={onLogout} />
       <div className="landing-content">
         <ProfileSummaryCard user={user} setUser={setUserState} />
         <PinnedHealthOverview

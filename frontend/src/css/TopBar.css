@@ -125,6 +125,12 @@
   transform: translateY(-1px);
 }
 
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ff6b6b;
+}
+
 .notification-button {
   position: relative;
 }

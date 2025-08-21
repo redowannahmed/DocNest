@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import "../css/FileUpload.css"
+import sessionManager from "../utils/SessionManager"
 
 export default function FileUpload({
   onFilesUploaded,
@@ -15,7 +16,7 @@ export default function FileUpload({
   const [uploadedFiles, setUploadedFiles] = useState([])
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef(null)
-  const token = localStorage.getItem("token")
+  const token = sessionManager.getToken()
 
   // Initialize uploaded files only once when initialFiles changes
   useEffect(() => {

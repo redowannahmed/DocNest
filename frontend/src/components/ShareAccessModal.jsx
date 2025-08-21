@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../css/ShareAccessModal.css';
+import sessionManager from '../utils/SessionManager';
 
 export default function ShareAccessModal({ isOpen, onClose }) {
   const [visits, setVisits] = useState([]);
@@ -23,7 +24,7 @@ export default function ShareAccessModal({ isOpen, onClose }) {
 
   const fetchVisits = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionManager.getToken();
       const response = await fetch('/api/patient-access/medical-visits-for-sharing', {
         headers: { Authorization: token }
       });
@@ -72,7 +73,7 @@ export default function ShareAccessModal({ isOpen, onClose }) {
     setError('');
     
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionManager.getToken();
       const response = await fetch('/api/patient-access/generate-access-code', {
         method: 'POST',
         headers: {

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import "../css/QuickActions.css"
 import MedicalHistoryDialog from "./MedicalHistoryDialog"
 import ShareAccessModal from "./ShareAccessModal"
+import sessionManager from "../utils/SessionManager"
 
 const actions = [
   { label: "Add New Record", icon: "➕", action: "add-record" },
@@ -36,7 +37,7 @@ export default function QuickActions({ onAddRecord }) {
 
   const handleSaveRecord = async (recordData) => {
     try {
-      const token = localStorage.getItem("token")
+      const token = sessionManager.getToken()
       const response = await fetch("/api/userdata/medical-history", {
         method: "POST",
         headers: {

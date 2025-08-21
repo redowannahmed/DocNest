@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom"
 import SignIn from "./components/SignIn"
@@ -9,18 +9,25 @@ import Homepage from "./components/Homepage" // Import Homepage
 import Landing from "./components/Landing" // Import Landing page
 import DoctorDashboard from "./components/DoctorDashboard"
 import DoctorBlogs from "./components/DoctorBlogs"
+import sessionManager from "./utils/SessionManager"
 
 function AppRouter() {
   const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user")
-    return storedUser ? JSON.parse(storedUser) : null
+    return sessionManager.getUser()
   })
   const navigate = useNavigate()
 
+  // Listen for session changes and update user state
+  useEffect(() => {
+    const currentUser = sessionManager.getUser()
+    setUser(currentUser)
+    
+    console.log("[AppRouter] Session info:", sessionManager.getSessionInfo())
+  }, [])
+
   const handleLogin = (userData, token) => {
+    sessionManager.login(userData, token)
     setUser(userData)
-    localStorage.setItem("user", JSON.stringify(userData))
-    localStorage.setItem("token", token)
     console.log("[AppRouter] handleLogin userData:", userData)
     // Check user role and redirect to the appropriate route
     if (userData.role === "doctor") {
@@ -33,10 +40,15 @@ function AppRouter() {
   }
 
   const handleRegister = (userData, token) => {
+    sessionManager.login(userData, token)
     setUser(userData)
-    localStorage.setItem("user", JSON.stringify(userData))
-    localStorage.setItem("token", token)
     navigate("/dashboard") // Redirect to dashboard after registration
+  }
+
+  const handleLogout = () => {
+    sessionManager.logout()
+    setUser(null)
+    navigate("/signin")
   }
 
   return (
@@ -53,7 +65,7 @@ function AppRouter() {
         path="/dashboard"
         element={
           user && user.role === "patient"
-            ? <Landing user={user} setUser={setUser} />
+            ? <Landing user={user} setUser={setUser} onLogout={handleLogout} />
             : <Navigate to={user ? (user.role === "doctor" ? "/doctor" : "/signin") : "/signin"} />
         }
       />
@@ -61,7 +73,7 @@ function AppRouter() {
       {/* Doctor dashboard */}
       <Route
         path="/doctor"
-        element={user && user.role === "doctor" ? <DoctorDashboard user={user} /> : <Navigate to="/signin" />}
+        element={user && user.role === "doctor" ? <DoctorDashboard user={user} onLogout={handleLogout} /> : <Navigate to="/signin" />}
       />
 
       {/* Doctor Blogs route for patients */}
