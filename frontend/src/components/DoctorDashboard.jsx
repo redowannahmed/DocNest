@@ -17,6 +17,8 @@ export default function DoctorDashboard({ user }) {
   const [loadingAccess, setLoadingAccess] = useState(false);
   const [patientData, setPatientData] = useState(null);
   const [showPatientProfile, setShowPatientProfile] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [editForm, setEditForm] = useState({ title: "", content: "" });
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -36,7 +38,7 @@ export default function DoctorDashboard({ user }) {
   };
 
   useEffect(() => {
-    fetch("/api/forum", { headers: { Authorization: token } })
+    fetch("/api/forum/my-posts", { headers: { Authorization: token } })
       .then((res) => res.json())
       .then(setPosts);
   }, [token]);
@@ -159,6 +161,76 @@ export default function DoctorDashboard({ user }) {
     setPatientData(null);
   };
 
+  const startEditPost = (post) => {
+    setEditingPost(post._id);
+    setEditForm({ title: post.title, content: post.content });
+  };
+
+  const cancelEdit = () => {
+    setEditingPost(null);
+    setEditForm({ title: "", content: "" });
+  };
+
+  const handleEditPost = async (e) => {
+    e.preventDefault();
+    
+    if (!editForm.title.trim() || !editForm.content.trim()) {
+      alert("Please fill in both title and content");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/forum/${editingPost}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      if (res.ok) {
+        const updatedPost = await res.json();
+        setPosts(posts.map(p => p._id === updatedPost._id ? updatedPost : p));
+        setEditingPost(null);
+        setEditForm({ title: "", content: "" });
+        showToast("✅ Blog post updated successfully!");
+      } else {
+        const errorData = await res.json();
+        showToast(`❌ Failed to update: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error updating post:", error);
+      showToast("❌ Failed to update blog post. Please try again.");
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/forum/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (res.ok) {
+        setPosts(posts.filter(p => p._id !== postId));
+        showToast("🗑️ Blog post deleted successfully!");
+      } else {
+        const errorData = await res.json();
+        showToast(`❌ Failed to delete: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      showToast("❌ Failed to delete blog post. Please try again.");
+    }
+  };
+
   return (
     <div className="doctor-dashboard">
       <header className="doctor-header">
@@ -179,7 +251,66 @@ export default function DoctorDashboard({ user }) {
         </div>
       </header>
 
-      <div className="dashboard-content-row">
+      {/* Patient Profile Access */}
+      <div className="access-card">
+        <div className="access-header">
+          <div className="access-icon">
+            <i className="fas fa-user-md"></i>
+          </div>
+          <div className="access-content">
+            <h2>Patient Profile Access</h2>
+            <p>Enter the access code provided by a patient to view their medical profile in read-only mode.</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleAccessPatient} className="access-form-horizontal">
+          <div className="form-input-group">
+            <div className="input-wrapper">
+              <label htmlFor="access-code">Access Code</label>
+              <input
+                type="text"
+                id="access-code"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value)}
+                placeholder="Enter 6-digit code"
+                maxLength="6"
+                className={accessCodeError ? "error" : ""}
+              />
+              {accessCodeError && (
+                <div className="error-message">{accessCodeError}</div>
+              )}
+            </div>
+            
+            <button 
+              type="submit" 
+              className="access-btn-modern"
+              disabled={loadingAccess || !accessCode.trim()}
+            >
+              {loadingAccess ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Accessing...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-key"></i>
+                  Access Profile
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="access-info-compact">
+            <div className="info-items">
+              <span><i className="fas fa-clock"></i> Expires in 30 min</span>
+              <span><i className="fas fa-shield-alt"></i> Read-only access</span>
+              <span><i className="fas fa-eye-slash"></i> Patient can hide visits</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div className="dashboard-content">
         <section className="community-forum">
           
           {/* Create Post Section */}
@@ -284,54 +415,125 @@ export default function DoctorDashboard({ user }) {
                   key={post._id}
                   className={`blog-post-preview ${expandedPosts[post._id] ? "expanded" : ""}`}
                 >
-                  <div className="post-header">
-                    <h4 className="post-title">{post.title}</h4>
-                    <div className="post-meta">
-                      <span className="post-status">
-                        <i className="fas fa-globe"></i>
-                        Public
-                      </span>
-                      <span className="post-date">{timeAgo(post.createdAt)}</span>
-                    </div>
-                  </div>
+                  {editingPost === post._id ? (
+                    /* Edit Form */
+                    <form onSubmit={handleEditPost} className="edit-post-form">
+                      <div className="edit-header">
+                        <h4>Edit Blog Post</h4>
+                        <button 
+                          type="button" 
+                          className="cancel-edit-btn"
+                          onClick={cancelEdit}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      </div>
+                      
+                      <div className="form-group">
+                        <label htmlFor={`edit-title-${post._id}`}>Title</label>
+                        <input
+                          id={`edit-title-${post._id}`}
+                          type="text"
+                          value={editForm.title}
+                          onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                          required
+                        />
+                      </div>
 
-                  <div className="post-content">
-                    {expandedPosts[post._id] || post.content.length <= 200 ? (
-                      <p>{post.content}</p>
-                    ) : (
-                      <p>
-                        {post.content.substring(0, 200)}...
-                      </p>
-                    )}
-                  </div>
+                      <div className="form-group">
+                        <label htmlFor={`edit-content-${post._id}`}>Content</label>
+                        <textarea
+                          id={`edit-content-${post._id}`}
+                          value={editForm.content}
+                          onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
+                          required
+                          rows="6"
+                        />
+                      </div>
 
-                  <div className="post-actions">
-                    {!expandedPosts[post._id] && post.content.length > 200 ? (
-                      <button
-                        className="expand-btn"
-                        onClick={() => toggleExpand(post._id)}
-                      >
-                        <i className="fas fa-chevron-down"></i>
-                        Read more
-                      </button>
-                    ) : expandedPosts[post._id] && post.content.length > 200 ? (
-                      <button
-                        className="expand-btn"
-                        onClick={() => toggleExpand(post._id)}
-                      >
-                        <i className="fas fa-chevron-up"></i>
-                        Show less
-                      </button>
-                    ) : null}
+                      <div className="edit-actions">
+                        <button type="submit" className="save-btn">
+                          <i className="fas fa-save"></i>
+                          Save Changes
+                        </button>
+                        <button 
+                          type="button" 
+                          className="cancel-btn"
+                          onClick={cancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    /* Regular Post View */
+                    <>
+                      <div className="post-header">
+                        <h4 className="post-title">{post.title}</h4>
+                        <div className="post-meta">
+                          <span className="post-status">
+                            <i className="fas fa-globe"></i>
+                            Public
+                          </span>
+                          <span className="post-date">{timeAgo(post.createdAt)}</span>
+                        </div>
+                      </div>
 
-                    <button
-                      className="view-comments-btn"
-                      onClick={() => openCommentsModal(post)}
-                    >
-                      <i className="fas fa-comments"></i>
-                      {post.comments?.length || 0} Comments
-                    </button>
-                  </div>
+                      <div className="post-content">
+                        {expandedPosts[post._id] || post.content.length <= 200 ? (
+                          <p>{post.content}</p>
+                        ) : (
+                          <p>
+                            {post.content.substring(0, 200)}...
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="post-actions">
+                        {!expandedPosts[post._id] && post.content.length > 200 ? (
+                          <button
+                            className="expand-btn"
+                            onClick={() => toggleExpand(post._id)}
+                          >
+                            <i className="fas fa-chevron-down"></i>
+                            Read more
+                          </button>
+                        ) : expandedPosts[post._id] && post.content.length > 200 ? (
+                          <button
+                            className="expand-btn"
+                            onClick={() => toggleExpand(post._id)}
+                          >
+                            <i className="fas fa-chevron-up"></i>
+                            Show less
+                          </button>
+                        ) : null}
+
+                        <button
+                          className="view-comments-btn"
+                          onClick={() => openCommentsModal(post)}
+                        >
+                          <i className="fas fa-comments"></i>
+                          {post.comments?.length || 0} Comments
+                        </button>
+
+                        <button
+                          className="edit-btn"
+                          onClick={() => startEditPost(post)}
+                        >
+                          <i className="fas fa-edit"></i>
+                          Edit
+                        </button>
+
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDeletePost(post._id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))
             )}
@@ -339,60 +541,6 @@ export default function DoctorDashboard({ user }) {
           </div>
 
         </section>
-
-        <section className="profile-access">
-          <h2>Patient Profile Access</h2>
-          <p className="access-description">
-            Enter the access code provided by a patient to view their medical profile in read-only mode.
-          </p>
-
-          <form onSubmit={handleAccessPatient} className="access-form">
-            <div className="form-group">
-              <label htmlFor="access-code">Patient Access Code</label>
-              <input
-                type="text"
-                id="access-code"
-                value={accessCode}
-                onChange={(e) => setAccessCode(e.target.value)}
-                placeholder="Enter 6-digit access code"
-                maxLength="6"
-                className={accessCodeError ? "error" : ""}
-              />
-              {accessCodeError && (
-                <div className="error-message">{accessCodeError}</div>
-              )}
-            </div>
-            
-            <button 
-              type="submit" 
-              className="access-btn"
-              disabled={loadingAccess || !accessCode.trim()}
-            >
-              {loadingAccess ? (
-                <>
-                  <span className="loading-spinner"></span>
-                  Accessing...
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-key"></i>
-                  Access Patient Profile
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="access-info">
-            <h4>How it works:</h4>
-            <ul>
-              <li>Patients generate temporary access codes from their dashboard</li>
-              <li>Access codes expire after 30 minutes for security</li>
-              <li>You'll have read-only access to their medical history</li>
-              <li>Patients can choose to hide specific medical visits</li>
-            </ul>
-          </div>
-        </section>
-
       </div>
 
       {activePost && (
