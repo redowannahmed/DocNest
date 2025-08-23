@@ -32,6 +32,27 @@ const medicalHistorySchema = new mongoose.Schema({
   notes: String
 }, { timestamps: true });
 
+// Optional: provenance and digital prescription (doctor-authored) fields
+medicalHistorySchema.add({
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  createdByRole: { type: String, enum: ["patient", "doctor"], required: false },
+  digitalPrescription: {
+    medications: [
+      {
+        name: { type: String, required: true },
+        dosage: { type: String },
+        frequency: { type: String },
+        duration: { type: String },
+        notes: { type: String }
+      }
+    ],
+    advice: { type: String },
+    tests: [{ type: String }],
+    followUpDate: { type: Date },
+    additionalNotes: { type: String }
+  }
+});
+
 // Add a pre-remove hook to delete associated Cloudinary files
 medicalHistorySchema.pre('remove', async function(next) {
   try {

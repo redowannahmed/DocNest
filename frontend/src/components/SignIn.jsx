@@ -76,6 +76,7 @@ const SignIn = ({ onLogin }) => {
               <select value={role} onChange={(e) => setRole(e.target.value)} required className="role-select">
                 <option value="patient">Sign in as Patient</option>
                 <option value="doctor">Sign in as Doctor</option>
+                <option value="admin">Sign in as Admin</option>
               </select>
             </div>
           </div>

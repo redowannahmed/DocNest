@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react"
 import "../css/MedicalHistory.css"
+import TestReportUpload from "./TestReportUpload"
 
 export default function MedicalHistory({ user, medicalHistory = [], setMedicalHistory }) {
   const [expandedId, setExpandedId] = useState(null)
   const [imageModal, setImageModal] = useState({ isOpen: false, src: "", alt: "" })
   const [searchQuery, setSearchQuery] = useState("")
+  const [uploadModal, setUploadModal] = useState({ isOpen: false, visitId: null })
 
   // Build a searchable text blob for a visit: doctor, specialty, reason, status, and multiple date formats
   const buildVisitIndex = (visit) => {
@@ -78,17 +80,40 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
   }
 
   // Function to open image in modal
-  const openImageModal = (imageUrl, altText) => {
+  const openImageModal = (imageUrl, altText, digitalPrescription = null) => {
     setImageModal({
       isOpen: true,
       src: imageUrl,
-      alt: altText
+      alt: altText,
+      digitalPrescription
     })
   }
 
   // Function to close image modal
   const closeImageModal = () => {
-    setImageModal({ isOpen: false, src: "", alt: "" })
+    setImageModal({ isOpen: false, src: "", alt: "", digitalPrescription: null })
+  }
+
+  // Function to open test report upload modal
+  const openUploadModal = (visitId) => {
+    setUploadModal({ isOpen: true, visitId })
+  }
+
+  // Function to close test report upload modal
+  const closeUploadModal = () => {
+    setUploadModal({ isOpen: false, visitId: null })
+  }
+
+  // Function to handle successful upload
+  const handleUploadSuccess = (updatedVisit) => {
+    // Update the medical history with the new test reports
+    if (setMedicalHistory) {
+      setMedicalHistory(prevHistory => 
+        prevHistory.map(visit => 
+          visit._id === updatedVisit._id ? updatedVisit : visit
+        )
+      )
+    }
   }
 
   return (
@@ -126,14 +151,71 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
 
               {expandedId === visit._id && (
                 <div className="visit-details">
-                  <div className="details-section">
-                    <strong>Notes:</strong>
-                    <p>{visit.notes || "No notes available"}</p>
+                  {/* Visit Metadata */}
+                  <div className="visit-metadata">
+                    <div className="metadata-item">
+                      <span className="metadata-label">Created by:</span>
+                      <span className="metadata-value">
+                        {visit.createdByRole === 'doctor' ? (
+                          <span className="doctor-badge">
+                            <i className="fas fa-user-md"></i>
+                            Doctor
+                          </span>
+                        ) : (
+                          <span className="patient-badge">
+                            <i className="fas fa-user"></i>
+                            Self-reported
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    {visit.createdAt && (
+                      <div className="metadata-item">
+                        <span className="metadata-label">Added on:</span>
+                        <span className="metadata-value">{formatDate(visit.createdAt)}</span>
+                      </div>
+                    )}
                   </div>
 
+                  {/* Notes Section */}
                   <div className="details-section">
-                    <strong>Prescriptions:</strong>
+                    <strong>
+                      <i className="section-icon">📝</i>
+                      Notes:
+                    </strong>
+                    <div className="notes-content">
+                      <p>{visit.notes || "No notes available"}</p>
+                    </div>
+                  </div>
+
+                  {/* Prescriptions Section */}
+                  <div className="details-section">
+                    <strong>
+                      <i className="section-icon">💊</i>
+                      Prescriptions:
+                    </strong>
                     <div className="files-grid">
+                      {/* Show digital prescription only for doctor-created visits */}
+                      {visit.digitalPrescription && visit.createdByRole === 'doctor' && (
+                        <div className="digital-prescription-card" onClick={() => openImageModal(null, 'Digital Prescription', visit.digitalPrescription)}>
+                          <div className="digital-rx-icon">
+                            <i className="fas fa-file-prescription"></i>
+                          </div>
+                          <div className="digital-rx-content">
+                            <div className="digital-rx-title">Digital Prescription</div>
+                            <div className="digital-rx-subtitle">
+                              {(visit.digitalPrescription.medications || []).length} medication(s)
+                              {visit.digitalPrescription.advice && ' • Advice included'}
+                              {(visit.digitalPrescription.tests || []).length > 0 && ` • ${visit.digitalPrescription.tests.length} test(s)`}
+                            </div>
+                          </div>
+                          <div className="digital-rx-arrow">
+                            <i className="fas fa-chevron-right"></i>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Show prescription images */}
                       {visit.prescriptionImgs?.length > 0 ? (
                         visit.prescriptionImgs.map((img, i) => {
                           const imageUrl = getImageUrl(img)
@@ -150,13 +232,36 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
                           )
                         })
                       ) : (
-                        <p className="no-files">No prescriptions uploaded</p>
+                        /* Show "no prescription uploaded" only for patient-created visits or doctor visits without digital prescription */
+                        (visit.createdByRole !== 'doctor' || !visit.digitalPrescription) && (
+                          <p className="no-files">No prescriptions uploaded</p>
+                        )
                       )}
                     </div>
                   </div>
 
+                  {/* Test Reports Section */}
                   <div className="details-section">
-                    <strong>Test Reports:</strong>
+                    <div className="section-header">
+                      <strong>
+                        <i className="section-icon">📋</i>
+                        Test Reports:
+                      </strong>
+                      {/* Show upload button only for doctor-created visits and only if user is the patient */}
+                      {visit.createdByRole === 'doctor' && user && (
+                        <button 
+                          className="add-test-report-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openUploadModal(visit._id);
+                          }}
+                          title="Add test report to this visit"
+                        >
+                          <i className="fas fa-plus"></i>
+                          Add Test Report
+                        </button>
+                      )}
+                    </div>
                     <div className="files-grid">
                       {visit.testReports?.length > 0 ? (
                         visit.testReports.map((img, i) => {
@@ -174,7 +279,13 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
                           )
                         })
                       ) : (
-                        <p className="no-files">No test reports uploaded</p>
+                        <div className="no-files-container">
+                          <p className="no-files">
+                            {visit.createdByRole === 'doctor' 
+                              ? 'No test reports uploaded yet' 
+                              : 'No test reports uploaded'}
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -196,14 +307,89 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
             <button className="image-modal-close" onClick={closeImageModal}>
               ×
             </button>
-            <img
-              src={imageModal.src}
-              alt={imageModal.alt}
-              className="image-modal-img"
-            />
-            <p className="image-modal-caption">{imageModal.alt}</p>
+            {imageModal.digitalPrescription ? (
+              <div className="rx-preview">
+                <div className="rx-header">
+                  <div className="rx-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="currentColor"/>
+                      <path d="M14 17H7V15H14V17ZM17 13H7V11H17V13ZM17 9H7V7H17V9Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <h3>Digital Prescription</h3>
+                </div>
+
+                <div className="rx-content">
+                  {(imageModal.digitalPrescription.medications || []).length > 0 && (
+                    <div className="rx-section">
+                      <h4>💊 Prescribed Medications</h4>
+                      <div className="medications-grid">
+                        {imageModal.digitalPrescription.medications.map((med, i) => (
+                          <div key={i} className="med-card">
+                            <div className="med-name">{med.name}</div>
+                            {med.dosage && <div className="med-dosage">{med.dosage}</div>}
+                            <div className="med-info">
+                              {med.frequency && <span>📅 {med.frequency}</span>}
+                              {med.duration && <span>⏱️ {med.duration}</span>}
+                            </div>
+                            {med.notes && <div className="med-notes">{med.notes}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {imageModal.digitalPrescription.advice && (
+                    <div className="rx-section">
+                      <h4>🩺 Doctor's Advice</h4>
+                      <div className="advice-card">
+                        {imageModal.digitalPrescription.advice}
+                      </div>
+                    </div>
+                  )}
+
+                  {(imageModal.digitalPrescription.tests || []).length > 0 && (
+                    <div className="rx-section">
+                      <h4>🔬 Recommended Tests</h4>
+                      <div className="tests-grid">
+                        {imageModal.digitalPrescription.tests.map((test, i) => (
+                          <div key={i} className="test-card">{test}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {imageModal.digitalPrescription.followUpDate && (
+                    <div className="rx-section">
+                      <h4>📅 Follow-up</h4>
+                      <div className="followup-card">
+                        {formatDate(imageModal.digitalPrescription.followUpDate)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <img
+                  src={imageModal.src}
+                  alt={imageModal.alt}
+                  className="image-modal-img"
+                />
+                <p className="image-modal-caption">{imageModal.alt}</p>
+              </>
+            )}
           </div>
         </div>
+      )}
+      
+      {/* Test Report Upload Modal */}
+      {uploadModal.isOpen && (
+        <TestReportUpload
+          visitId={uploadModal.visitId}
+          onUploadSuccess={handleUploadSuccess}
+          onClose={closeUploadModal}
+        />
       )}
     </div>
   )

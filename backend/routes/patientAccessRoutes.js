@@ -124,7 +124,8 @@ router.post("/access-patient-profile", verifyToken, async (req, res) => {
       pinnedConditions,
       medications,
       accessExpiresAt: codeRecord.expiresAt,
-      hiddenVisitCount: codeRecord.hiddenVisitIds.length
+      hiddenVisitCount: codeRecord.hiddenVisitIds.length,
+      accessCode: codeRecord.accessCode
     });
 
   } catch (error) {
@@ -197,6 +198,73 @@ router.get("/check-patient-access/:accessCode", verifyToken, async (req, res) =>
   } catch (error) {
     console.error("Check patient access error:", error);
     res.status(500).json({ message: "Failed to check patient access" });
+  }
+});
+
+// POST - Doctor adds a medical visit to patient via active access code
+router.post("/patients/:accessCode/medical-history", verifyToken, async (req, res) => {
+  try {
+    // Verify user is a doctor
+    const doctor = await User.findById(req.user.id).select('role name');
+    if (!doctor) return res.status(401).json({ message: "User not found" });
+    if (doctor.role !== 'doctor') return res.status(403).json({ message: "Only doctors can add visits" });
+
+    const { accessCode } = req.params;
+    const codeRecord = await PatientAccessCode.findOne({
+      accessCode,
+      accessedBy: req.user.id,
+      isActive: true,
+      expiresAt: { $gt: new Date() }
+    }).populate('patient', 'id');
+
+    if (!codeRecord) {
+      return res.status(403).json({ message: "No active access for this code" });
+    }
+
+    const {
+      date,
+      doctor: doctorName,
+      specialty,
+      reason,
+      status = 'Completed',
+      notes,
+      digitalPrescription,
+      prescriptionImgs,
+      testReports
+    } = req.body;
+
+    if (!date || !doctorName || !reason) {
+      return res.status(400).json({ message: "date, doctor, and reason are required" });
+    }
+
+    // Future date validation (same as patient path)
+    const visit = new Date(date);
+    const today = new Date();
+    visit.setHours(0,0,0,0); today.setHours(0,0,0,0);
+    if (visit > today) {
+      return res.status(400).json({ message: "Visit date cannot be in the future" });
+    }
+
+    const item = new MedicalHistory({
+      user: codeRecord.patient._id,
+      date,
+      doctor: doctorName,
+      specialty,
+      reason,
+      status,
+      notes,
+      prescriptionImgs: Array.isArray(prescriptionImgs) ? prescriptionImgs : [],
+      testReports: Array.isArray(testReports) ? testReports : [],
+      createdBy: req.user.id,
+      createdByRole: 'doctor',
+      digitalPrescription: digitalPrescription || undefined
+    });
+
+    await item.save();
+    return res.status(201).json(item);
+  } catch (error) {
+    console.error("Doctor add visit error:", error);
+    return res.status(500).json({ message: "Failed to add medical visit" });
   }
 });
 

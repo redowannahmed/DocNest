@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/DoctorDashboard.css";
 import PatientProfileView from "./PatientProfileView";
+import DoctorAddVisitDialog from "./DoctorAddVisitDialog";
 import sessionManager from "../utils/SessionManager";
 
 export default function DoctorDashboard({ user, onLogout }) {
@@ -20,6 +21,7 @@ export default function DoctorDashboard({ user, onLogout }) {
   const [showPatientProfile, setShowPatientProfile] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", content: "" });
+  const [showAddVisit, setShowAddVisit] = useState(false);
   const navigate = useNavigate();
   const token = sessionManager.getToken();
 
@@ -160,6 +162,7 @@ export default function DoctorDashboard({ user, onLogout }) {
   const closePatientProfile = () => {
     setShowPatientProfile(false);
     setPatientData(null);
+    setShowAddVisit(false); // Keep this line to close the dialog when profile is closed
   };
 
   const startEditPost = (post) => {
@@ -344,6 +347,8 @@ export default function DoctorDashboard({ user, onLogout }) {
                 <div className="section-header">
                   <div className="header-with-close">
                     <div>
+
+                    {/* DoctorAddVisitDialog is rendered at page level now */}
                       <h2>Create Public Blog Post</h2>
                       <p className="section-description">
                         Share your medical expertise with patients and other healthcare professionals. 
@@ -626,8 +631,21 @@ export default function DoctorDashboard({ user, onLogout }) {
           accessExpiresAt={patientData.accessExpiresAt}
           hiddenVisitCount={patientData.hiddenVisitCount}
           onClose={closePatientProfile}
+        onAddVisit={() => setShowAddVisit(true)} // Pass onAddVisit to PatientProfileView
         />
       )}
+
+      {/* Add Medical Visit Dialog (always available when state toggled) */}
+      <DoctorAddVisitDialog
+        isOpen={showAddVisit}
+        onClose={() => setShowAddVisit(false)}
+        accessCode={patientData?.accessCode}
+        onSaved={(newVisit) => {
+          // Update patientData.medicalHistory list optimistically
+          setPatientData((pd) => pd ? { ...pd, medicalHistory: [newVisit, ...(pd.medicalHistory || [])] } : pd);
+          showToast('✅ Visit added to patient profile');
+        }}
+      />
 
     </div>
   );
