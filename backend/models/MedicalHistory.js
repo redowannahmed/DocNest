@@ -2,7 +2,21 @@ const mongoose = require("mongoose");
 
 const medicalHistorySchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  date: { type: Date, required: true },
+  date: { 
+    type: Date, 
+    required: true,
+    validate: {
+      validator: function (v) {
+        if (!v) return false
+        const visit = new Date(v)
+        const today = new Date()
+        visit.setHours(0, 0, 0, 0)
+        today.setHours(0, 0, 0, 0)
+        return visit <= today
+      },
+      message: 'Visit date cannot be in the future'
+    }
+  },
   doctor: String,
   specialty: String,  // Added to match frontend
   reason: String,

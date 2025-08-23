@@ -73,6 +73,18 @@ router.post("/medical-history", verifyToken, async (req, res) => {
 
     console.log("Received data:", req.body) // Debug log
 
+    // Validate: date cannot be in the future
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" })
+    }
+    const visit = new Date(date)
+    const today = new Date()
+    visit.setHours(0, 0, 0, 0)
+    today.setHours(0, 0, 0, 0)
+    if (visit > today) {
+      return res.status(400).json({ message: "Visit date cannot be in the future" })
+    }
+
     // Ensure we have arrays for image fields
     const finalPrescriptionImgs = formatImages(prescriptionImgs || prescriptions)
     const finalTestReports = formatImages(testReports || testReportImgs)
@@ -119,6 +131,17 @@ router.put("/medical-history/:id", verifyToken, async (req, res) => {
     } = req.body
 
     console.log("Updating with data:", req.body) // Debug log
+
+    // Validate: date cannot be in the future (if provided)
+    if (date) {
+      const visit = new Date(date)
+      const today = new Date()
+      visit.setHours(0, 0, 0, 0)
+      today.setHours(0, 0, 0, 0)
+      if (visit > today) {
+        return res.status(400).json({ message: "Visit date cannot be in the future" })
+      }
+    }
 
     // Ensure we have arrays for image fields
     const finalPrescriptionImgs = formatImages(prescriptionImgs || prescriptions)
