@@ -18,6 +18,15 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
 
   const [activeTab, setActiveTab] = useState("basic")
   const [saving, setSaving] = useState(false)
+  
+  // Helper: today's date in local YYYY-MM-DD (avoids UTC off-by-one)
+  const getTodayStr = () => {
+    const d = new Date()
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, "0")
+    const dd = String(d.getDate()).padStart(2, "0")
+    return `${yyyy}-${mm}-${dd}`
+  }
 
   // Initialize form data when dialog opens or editingVisit changes
   useEffect(() => {
@@ -82,6 +91,19 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
     setSaving(true)
 
     try {
+      // Guard: visit date cannot be in the future
+      if (formData.date) {
+        const selected = new Date(formData.date)
+        const today = new Date()
+        selected.setHours(0, 0, 0, 0)
+        today.setHours(0, 0, 0, 0)
+        if (selected > today) {
+          alert("Visit date cannot be in the future.")
+          setSaving(false)
+          return
+        }
+      }
+
       // Ensure arrays are properly formatted before sending
       const submitData = {
         ...formData,
@@ -154,7 +176,14 @@ export default function MedicalHistoryDialog({ isOpen, onClose, onSave, editingV
               <div className="form-row">
                 <div className="form-group">
                   <label>Visit Date *</label>
-                  <input type="date" name="date" value={formData.date} onChange={handleInputChange} required />
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    max={getTodayStr()}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
                 <div className="form-group">
                   <label>Status</label>
