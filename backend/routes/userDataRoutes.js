@@ -193,6 +193,44 @@ router.delete("/medical-history/:id", verifyToken, async (req, res) => {
   }
 })
 
+// POST add test report to existing medical history entry
+router.post("/medical-history/:id/test-reports", verifyToken, async (req, res) => {
+  try {
+    const { testReports } = req.body;
+
+    if (!testReports || !Array.isArray(testReports) || testReports.length === 0) {
+      return res.status(400).json({ message: "Test reports array is required" });
+    }
+
+    // Format the test reports
+    const formattedTestReports = formatImages(testReports);
+
+    // Find the medical history record
+    const item = await MedicalHistory.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!item) {
+      return res.status(404).json({ message: "Medical history record not found" });
+    }
+
+    // Add new test reports to existing ones
+    item.testReports = item.testReports || [];
+    item.testReports.push(...formattedTestReports);
+
+    await item.save();
+
+    res.json({
+      message: "Test reports added successfully",
+      medicalHistory: item
+    });
+  } catch (error) {
+    console.error("Test report upload error:", error.message);
+    res.status(500).json({ message: "Failed to upload test reports: " + error.message });
+  }
+})
+
 // ===== PINNED CONDITIONS CRUD =====
 
 router.get("/pinned-conditions", verifyToken, async (req, res) => {
