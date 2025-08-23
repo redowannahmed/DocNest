@@ -1,10 +1,11 @@
 const User = require("../models/User");
+const DoctorRequest = require("../models/DoctorRequest");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 
 // Validation function (does not change schema)
-function validateRegistration({ name, email, password, age, gender, location, role }) {
+function validateRegistration({ name, email, password, age, gender, location, role, bmdcId }) {
     // Name: not empty, min 2 chars, no only numbers, no special chars (except space/dot/dash)
     if (!name || typeof name !== "string" || name.trim().length < 2 || !/^[A-Za-z .'-]+$/.test(name.trim())) {
         return "Name must be at least 2 letters and use only valid characters.";
@@ -34,26 +35,91 @@ function validateRegistration({ name, email, password, age, gender, location, ro
     }
     // Location: optional, just must be string
     if (location && typeof location !== "string") return "Invalid location.";
-    // Role: must be patient or doctor
-    if (role && !["patient", "doctor"].includes(role)) return "Role must be patient or doctor.";
+    // Role: must be patient, doctor, or admin
+    if (role && !["patient", "doctor", "admin"].includes(role)) return "Role must be patient, doctor, or admin.";
+    // BMDC ID: required for doctors
+    if (role === "doctor") {
+        if (!bmdcId || typeof bmdcId !== "string" || bmdcId.trim().length === 0) {
+            return "BMDC ID is required for doctor registration.";
+        }
+        // Basic BMDC ID format validation (adjust as needed)
+        if (!/^[A-Z0-9-]+$/i.test(bmdcId.trim())) {
+            return "BMDC ID must contain only letters, numbers, and hyphens.";
+        }
+    }
     return null; // Valid!
 }
 
 exports.register = async (req, res) => {
     try {
-        let { name, email, password, age, gender, location, role } = req.body;
+        let { name, email, password, age, gender, location, role, bmdcId } = req.body;
 
         // Sanitize inputs
         name = name ? name.trim() : "";
         email = email ? email.trim().toLowerCase() : "";
         location = location ? location.trim() : "";
         gender = gender ? gender.trim().toLowerCase() : "";
-        role = role && role.toLowerCase() === "doctor" ? "doctor" : "patient"; // Normalize role
+        bmdcId = bmdcId ? bmdcId.trim().toUpperCase() : "";
+        role = role && ["doctor", "admin"].includes(role.toLowerCase()) ? role.toLowerCase() : "patient"; // Normalize role
 
         // Validate input
-        const error = validateRegistration({ name, email, password, age, gender, location, role });
+        const error = validateRegistration({ name, email, password, age, gender, location, role, bmdcId });
         if (error) return res.status(400).json({ message: error });
 
+        // Handle doctor registration differently - create request instead of user
+        if (role === "doctor") {
+            // Check if there's already a pending request for this email or BMDC ID
+            const existingRequest = await DoctorRequest.findOne({ 
+                $or: [{ email }, { bmdcId }] 
+            });
+            if (existingRequest) {
+                if (existingRequest.status === "pending") {
+                    const field = existingRequest.email === email ? "email" : "BMDC ID";
+                    return res.status(400).json({ 
+                        message: `A doctor registration request with this ${field} is already pending approval` 
+                    });
+                } else if (existingRequest.status === "approved") {
+                    const field = existingRequest.email === email ? "email" : "BMDC ID";
+                    return res.status(400).json({ 
+                        message: `A doctor account with this ${field} already exists` 
+                    });
+                } else if (existingRequest.status === "rejected") {
+                    const field = existingRequest.email === email ? "email" : "BMDC ID";
+                    return res.status(400).json({ 
+                        message: `A doctor registration request with this ${field} was previously rejected` 
+                    });
+                }
+            }
+
+            // Check if doctor already exists as user
+            const existingDoctor = await User.findOne({ email, role: "doctor" });
+            if (existingDoctor) {
+                return res.status(400).json({ 
+                    message: "A doctor account with this email already exists" 
+                });
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            const doctorRequest = new DoctorRequest({
+                name,
+                email,
+                password: hashedPassword,
+                age: age !== undefined && String(age).trim() !== "" ? Number(age) : undefined,
+                gender,
+                location,
+                bmdcId
+            });
+
+            await doctorRequest.save();
+
+            return res.status(201).json({
+                message: "Doctor registration request submitted successfully. Please wait for admin approval.",
+                requestId: doctorRequest._id
+            });
+        }
+
+        // For patients and admins, proceed with normal registration
         // Check duplicate email + role combination
         const existingUser = await User.findOne({ email, role });
         if (existingUser) {
@@ -98,11 +164,42 @@ exports.login = async (req, res) => {
     try {
         let { email, password, role } = req.body;
         email = email ? email.trim().toLowerCase() : "";
-        role = role && role.toLowerCase() === "doctor" ? "doctor" : "patient"; // Normalize role
+        role = role && ["doctor", "admin"].includes(role.toLowerCase()) ? role.toLowerCase() : "patient"; // Normalize role
 
+        if (!role) return res.status(400).json({ message: "Please select a role" });
+
+        // Handle admin login with default credentials FIRST
+        if (role === "admin") {
+            console.log("Admin login attempt - Email:", email, "Password:", password); // Debug log
+            if (email !== "admin@gmail.com" || password !== "admin123") {
+                console.log("Admin credentials mismatch - Expected: admin@gmail.com/admin123"); // Debug log
+                return res.status(400).json({ message: "Invalid admin credentials" });
+            }
+
+            // Check if admin user exists, if not create it
+            let adminUser = await User.findOne({ email: "admin@gmail.com", role: "admin" });
+            if (!adminUser) {
+                const hashedPassword = await bcrypt.hash("admin123", 10);
+                adminUser = new User({
+                    name: "Administrator",
+                    email: "admin@gmail.com",
+                    password: hashedPassword,
+                    role: "admin"
+                });
+                await adminUser.save();
+            }
+
+            const token = jwt.sign({ id: adminUser._id, role: adminUser.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+            return res.json({
+                token,
+                user: { id: adminUser._id, name: adminUser.name, email: adminUser.email, role: adminUser.role }
+            });
+        }
+
+        // Regular email validation for non-admin users
         if (!validator.isEmail(email)) return res.status(400).json({ message: "Invalid email or password" });
         if (!password || password.length < 8) return res.status(400).json({ message: "Invalid email or password" });
-        if (!role) return res.status(400).json({ message: "Please select a role" });
 
         // Find user with specific email AND role combination
         const user = await User.findOne({ email, role });

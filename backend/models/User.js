@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     location: String,
     email: { type: String, required: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ["patient", "doctor"], default: "patient" }
+    role: { type: String, enum: ["patient", "doctor", "admin"], default: "patient" },
+    bmdcId: { type: String } // Only for doctors
 }, { timestamps: true });
 
 // Create compound unique index for email + role combination

@@ -19,7 +19,7 @@ const ageValid = (age) => !age || (Number(age) >= 0 && Number(age) <= 120 && /^\
 const genderValid = (gender) => !gender || ["male", "female", "other", ""].includes(gender.trim().toLowerCase());
 
 const SignUp = ({ onRegister }) => {
-  const [form, setForm] = useState({ name: "", email: "", password: "", age: "", gender: "", location: "", role: "patient" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", age: "", gender: "", location: "", role: "patient", bmdcId: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ const SignUp = ({ onRegister }) => {
     if (!passwordStrength(form.password)) return setError("Password must be at least 8 chars, incl. upper, lower, number, special char.");
     if (!ageValid(form.age)) return setError("Age must be a number between 0 and 120.");
     if (!genderValid(form.gender)) return setError("Gender must be 'male', 'female', or 'other'.");
+    if (form.role === "doctor" && (!form.bmdcId || !form.bmdcId.trim())) return setError("BMDC ID is required for doctor registration.");
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -45,13 +46,20 @@ const SignUp = ({ onRegister }) => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Registration failed");
-      setSuccess(true);
-      // If API returns token/user, store them (current API returns token only in login; keep future-proof)
-      if (data?.user && data?.token) {
-        localStorage.setItem("user", JSON.stringify(data.user))
-        localStorage.setItem("token", data.token)
+      
+      // Different success messages based on role
+      if (form.role === "doctor") {
+        setSuccess("Doctor registration request submitted! Please wait for admin approval.");
+        setTimeout(() => navigate("/signin"), 3000);
+      } else {
+        setSuccess("Registration successful!");
+        // If API returns token/user, store them (current API returns token only in login; keep future-proof)
+        if (data?.user && data?.token) {
+          localStorage.setItem("user", JSON.stringify(data.user))
+          localStorage.setItem("token", data.token)
+        }
+        setTimeout(() => navigate("/signin"), 1500);
       }
-      setTimeout(() => navigate("/signin"), 1500);
     } catch (err) {
       setError(err.message);
     }
@@ -147,10 +155,23 @@ const SignUp = ({ onRegister }) => {
                 <option value="doctor">Register as Doctor</option>
               </select>
             </div>
+            {form.role === "doctor" && (
+              <div className="input-group">
+                <i className="fas fa-id-card input-icon"></i>
+                <input 
+                  name="bmdcId" 
+                  placeholder="BMDC Registration ID" 
+                  value={form.bmdcId} 
+                  onChange={handleChange} 
+                  required={form.role === "doctor"}
+                  autoComplete="off"
+                />
+              </div>
+            )}
           </div>
           <button type="submit">Create Account</button>
           {error && <p className="error">{error}</p>}
-          {success && <p className="success">Registration successful! Redirecting to sign in...</p>}
+          {success && <p className="success">{success}</p>}
         </form>
         <div className="auth-links">
           <p>Already have an account? <Link to="/signin">Sign In</Link></p>

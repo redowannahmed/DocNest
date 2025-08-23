@@ -9,6 +9,7 @@ import Homepage from "./components/Homepage" // Import Homepage
 import Landing from "./components/Landing" // Import Landing page
 import DoctorDashboard from "./components/DoctorDashboard"
 import DoctorBlogs from "./components/DoctorBlogs"
+import AdminDashboard from "./components/AdminDashboard"
 import sessionManager from "./utils/SessionManager"
 
 function AppRouter() {
@@ -34,6 +35,8 @@ function AppRouter() {
       navigate("/doctor")
     } else if (userData.role === "patient") {
       navigate("/dashboard")
+    } else if (userData.role === "admin") {
+      navigate("/admin")
     } else {
       navigate("/") // fallback
     }
@@ -66,7 +69,7 @@ function AppRouter() {
         element={
           user && user.role === "patient"
             ? <Landing user={user} setUser={setUser} onLogout={handleLogout} />
-            : <Navigate to={user ? (user.role === "doctor" ? "/doctor" : "/signin") : "/signin"} />
+            : <Navigate to={user ? (user.role === "doctor" ? "/doctor" : user.role === "admin" ? "/admin" : "/signin") : "/signin"} />
         }
       />
 
@@ -74,6 +77,12 @@ function AppRouter() {
       <Route
         path="/doctor"
         element={user && user.role === "doctor" ? <DoctorDashboard user={user} onLogout={handleLogout} /> : <Navigate to="/signin" />}
+      />
+
+      {/* Admin dashboard */}
+      <Route
+        path="/admin"
+        element={user && user.role === "admin" ? <AdminDashboard /> : <Navigate to="/signin" />}
       />
 
       {/* Doctor Blogs route for patients */}
