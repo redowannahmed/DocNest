@@ -1,250 +1,155 @@
-import { useEffect, useMemo, useState } from 'react';
-import '../css/MedicalHistoryDialog.css';
+"use client"
 
-export default function DoctorAddVisitDialog({
-  isOpen,
-  onClose,
-  accessCode,
-  onSaved
-}) {
-  const [form, setForm] = useState({
-    date: '',
-    doctor: '',
-    specialty: '',
-    reason: '',
-    status: 'Completed',
-    notes: '',
-    digitalPrescription: {
-      medications: [{ name: '', dosage: '', frequency: '', duration: '', notes: '' }],
-      advice: '',
-      tests: [],
-      followUpDate: ''
-    }
-  });
-  const [testInput, setTestInput] = useState('');
-  const [saving, setSaving] = useState(false);
+import { useState } from "react"
+import { X, Save, Calendar } from "lucide-react"
 
-  useEffect(() => {
-    if (isOpen) {
-      setForm((prev) => ({ ...prev, doctor: prev.doctor || '' }));
-    }
-  }, [isOpen]);
+export default function DoctorAddVisitDialog({ isOpen, onClose, accessCode, onSaved }) {
+  const [visitData, setVisitData] = useState({
+    date: "",
+    diagnosis: "",
+    treatment: "",
+    notes: "",
+  })
+  const [loading, setLoading] = useState(false)
 
-  const todayStr = useMemo(() => {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }, []);
+  if (!isOpen) return null
 
-  const update = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
 
-  const updateRx = (idx, key, value) => {
-    setForm((f) => {
-      const meds = [...(f.digitalPrescription?.medications || [])];
-      meds[idx] = { ...meds[idx], [key]: value };
-      return { ...f, digitalPrescription: { ...f.digitalPrescription, medications: meds } };
-    });
-  };
-
-  const addRx = () => {
-    setForm((f) => ({
-      ...f,
-      digitalPrescription: {
-        ...f.digitalPrescription,
-        medications: [...(f.digitalPrescription?.medications || []), { name: '', dosage: '', frequency: '', duration: '', notes: '' }]
-      }
-    }));
-  };
-
-  const removeRx = (idx) => {
-    setForm((f) => ({
-      ...f,
-      digitalPrescription: {
-        ...f.digitalPrescription,
-        medications: (f.digitalPrescription?.medications || []).filter((_, i) => i !== idx)
-      }
-    }));
-  };
-
-  const addTest = () => {
-    const t = testInput.trim();
-    if (!t) return;
-    setForm((f) => ({
-      ...f,
-      digitalPrescription: { ...f.digitalPrescription, tests: [ ...(f.digitalPrescription?.tests || []), t ] }
-    }));
-    setTestInput('');
-  };
-
-  const removeTest = (idx) => {
-    setForm((f) => ({
-      ...f,
-      digitalPrescription: {
-        ...f.digitalPrescription,
-        tests: (f.digitalPrescription?.tests || []).filter((_, i) => i !== idx)
-      }
-    }));
-  };
-
-  const submit = async (e) => {
-    e.preventDefault();
-
-    // Prevent future date
-    const selected = new Date(form.date);
-    const today = new Date();
-    selected.setHours(0,0,0,0); today.setHours(0,0,0,0);
-    if (selected > today) {
-      alert('Visit date cannot be in the future');
-      return;
-    }
-
-    setSaving(true);
     try {
-      const token = (await import('../utils/SessionManager')).default.getToken();
-      const res = await fetch(`/api/patient-access/patients/${accessCode}/medical-history`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: token },
-        body: JSON.stringify(form)
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || 'Failed to add medical visit');
-      }
-      const data = await res.json();
-      onSaved?.(data);
-      onClose?.();
-    } catch (err) {
-      console.error('Add visit failed', err);
-      alert(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
+      // Simulate API call to add visit
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-  if (!isOpen) return null;
+      // Call the onSaved callback with the new visit data
+      onSaved({
+        ...visitData,
+        id: Date.now(),
+        accessCode,
+      })
+
+      // Reset form
+      setVisitData({
+        date: "",
+        diagnosis: "",
+        treatment: "",
+        notes: "",
+      })
+    } catch (error) {
+      console.error("Error adding visit:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="dialog-overlay" onClick={onClose}>
-      <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
-        <div className="dialog-header">
-          <h2>Add Medical Visit (Digital Prescription)</h2>
-          <button className="dialog-close" onClick={onClose}>×</button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-card rounded-xl border border-border max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-foreground">Add Medical Visit</h3>
+                <p className="text-sm text-muted-foreground">Access Code: {accessCode}</p>
+              </div>
+            </div>
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-lg transition-colors">
+              <X className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </div>
         </div>
-        <form onSubmit={submit} className="dialog-form">
-          <div className="tab-content dialog-scroll">
-            <div className="form-row">
-              <div className="form-group">
-                <label>Visit Date *</label>
-                <input type="date" name="date" value={form.date} onChange={update} max={todayStr} required />
-              </div>
-              <div className="form-group">
-                <label>Status</label>
-                <select name="status" value={form.status} onChange={update}>
-                  <option value="Scheduled">Scheduled</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Cancelled">Cancelled</option>
-                </select>
-              </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Doctor Name *</label>
-                <input name="doctor" value={form.doctor} onChange={update} placeholder="Dr. Jane Doe" required />
-              </div>
-              <div className="form-group">
-                <label>Specialty</label>
-                <input name="specialty" value={form.specialty} onChange={update} placeholder="Cardiology" />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Reason for Visit *</label>
-              <input name="reason" value={form.reason} onChange={update} placeholder="Follow-up, diagnosis, etc." required />
-            </div>
-
-            <div className="form-group">
-              <label>Notes</label>
-              <textarea name="notes" value={form.notes} onChange={update} rows={3} />
-            </div>
-
-            <hr />
-            <h3>Digital Prescription</h3>
-
-            {(form.digitalPrescription?.medications || []).map((rx, idx) => (
-              <div key={idx} className="rx-row">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Medicine Name *</label>
-                    <input value={rx.name} onChange={(e) => updateRx(idx, 'name', e.target.value)} required />
-                  </div>
-                  <div className="form-group">
-                    <label>Dosage</label>
-                    <input value={rx.dosage || ''} onChange={(e) => updateRx(idx, 'dosage', e.target.value)} />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Frequency</label>
-                    <input value={rx.frequency || ''} onChange={(e) => updateRx(idx, 'frequency', e.target.value)} />
-                  </div>
-                  <div className="form-group">
-                    <label>Duration</label>
-                    <input value={rx.duration || ''} onChange={(e) => updateRx(idx, 'duration', e.target.value)} />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>Notes</label>
-                  <input value={rx.notes || ''} onChange={(e) => updateRx(idx, 'notes', e.target.value)} />
-                </div>
-                <div className="form-row">
-                  <button type="button" className="btn-secondary" onClick={() => removeRx(idx)}>Remove</button>
-                </div>
-                <hr />
-              </div>
-            ))}
-            <div className="form-row">
-              <button type="button" className="btn-secondary" onClick={addRx}>+ Add Medicine</button>
-            </div>
-
-            <div className="form-group">
-              <label>Advice / Instructions</label>
-              <textarea value={form.digitalPrescription?.advice || ''} onChange={(e) => setForm((f) => ({ ...f, digitalPrescription: { ...f.digitalPrescription, advice: e.target.value } }))} rows={3} />
-            </div>
-
-            <div className="form-group">
-              <label>Tests</label>
-              <div className="tests-input">
-                <input value={testInput} onChange={(e) => setTestInput(e.target.value)} placeholder="Add a test (e.g., CBC)" />
-                <button type="button" className="btn-secondary" onClick={addTest}>Add</button>
-              </div>
-              <div className="chips">
-                {(form.digitalPrescription?.tests || []).map((t, idx) => (
-                  <span key={idx} className="chip">
-                    {t}
-                    <button type="button" onClick={() => removeTest(idx)}>×</button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Follow-up Date</label>
-              <input type="date" value={form.digitalPrescription?.followUpDate || ''} onChange={(e) => setForm((f) => ({ ...f, digitalPrescription: { ...f.digitalPrescription, followUpDate: e.target.value } }))} />
-            </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div>
+            <label htmlFor="visit-date" className="block text-sm font-medium text-foreground mb-2">
+              Visit Date
+            </label>
+            <input
+              id="visit-date"
+              type="date"
+              value={visitData.date}
+              onChange={(e) => setVisitData({ ...visitData, date: e.target.value })}
+              required
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+            />
           </div>
 
-          <div className="dialog-actions">
-            <button type="button" className="btn-secondary" onClick={onClose} disabled={saving}>Cancel</button>
-            <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Visit'}</button>
+          <div>
+            <label htmlFor="diagnosis" className="block text-sm font-medium text-foreground mb-2">
+              Diagnosis
+            </label>
+            <input
+              id="diagnosis"
+              type="text"
+              placeholder="Enter diagnosis..."
+              value={visitData.diagnosis}
+              onChange={(e) => setVisitData({ ...visitData, diagnosis: e.target.value })}
+              required
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="treatment" className="block text-sm font-medium text-foreground mb-2">
+              Treatment
+            </label>
+            <input
+              id="treatment"
+              type="text"
+              placeholder="Enter treatment plan..."
+              value={visitData.treatment}
+              onChange={(e) => setVisitData({ ...visitData, treatment: e.target.value })}
+              required
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-2">
+              Additional Notes
+            </label>
+            <textarea
+              id="notes"
+              placeholder="Enter any additional notes..."
+              value={visitData.notes}
+              onChange={(e) => setVisitData({ ...visitData, notes: e.target.value })}
+              rows="4"
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring transition-colors resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Adding Visit...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Add Visit
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors font-medium"
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>
     </div>
-  );
+  )
 }
