@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../css/DoctorDashboard.css";
-import PatientProfileView from "./PatientProfileView";
 import DoctorAddVisitDialog from "./DoctorAddVisitDialog";
 import sessionManager from "../utils/SessionManager";
 
@@ -17,12 +16,12 @@ export default function DoctorDashboard({ user, onLogout }) {
   const [accessCode, setAccessCode] = useState("");
   const [accessCodeError, setAccessCodeError] = useState("");
   const [loadingAccess, setLoadingAccess] = useState(false);
-  const [patientData, setPatientData] = useState(null);
-  const [showPatientProfile, setShowPatientProfile] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", content: "" });
   const [showAddVisit, setShowAddVisit] = useState(false);
+  const [currentAccessCode, setCurrentAccessCode] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const token = sessionManager.getToken();
 
   const showToast = (message) => {
@@ -45,6 +44,16 @@ export default function DoctorDashboard({ user, onLogout }) {
       .then((res) => res.json())
       .then(setPosts);
   }, [token]);
+
+  // Handle location state when returning from patient profile
+  useEffect(() => {
+    if (location.state?.showAddVisit && location.state?.accessCode) {
+      setShowAddVisit(true);
+      setCurrentAccessCode(location.state.accessCode);
+      // Clear the location state to prevent re-triggering
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -143,10 +152,12 @@ export default function DoctorDashboard({ user, onLogout }) {
 
       if (response.ok) {
         const data = await response.json();
-        setPatientData(data);
-        setShowPatientProfile(true);
+        setCurrentAccessCode(accessCode.trim());
         setAccessCode("");
         showToast(`✅ Successfully accessed ${data.patient.name}'s profile`);
+        
+        // Navigate to full-page patient profile
+        navigate('/patient-profile', { state: { patientData: data } });
       } else {
         const errorData = await response.json();
         setAccessCodeError(errorData.message || "Invalid access code");
@@ -157,12 +168,6 @@ export default function DoctorDashboard({ user, onLogout }) {
     } finally {
       setLoadingAccess(false);
     }
-  };
-
-  const closePatientProfile = () => {
-    setShowPatientProfile(false);
-    setPatientData(null);
-    setShowAddVisit(false); // Keep this line to close the dialog when profile is closed
   };
 
   const startEditPost = (post) => {
@@ -621,29 +626,14 @@ export default function DoctorDashboard({ user, onLogout }) {
         </div>
       )}
 
-      {/* Patient Profile View */}
-      {showPatientProfile && patientData && (
-        <PatientProfileView
-          patient={patientData.patient}
-          medicalHistory={patientData.medicalHistory}
-          pinnedConditions={patientData.pinnedConditions}
-          medications={patientData.medications}
-          accessExpiresAt={patientData.accessExpiresAt}
-          hiddenVisitCount={patientData.hiddenVisitCount}
-          onClose={closePatientProfile}
-        onAddVisit={() => setShowAddVisit(true)} // Pass onAddVisit to PatientProfileView
-        />
-      )}
-
-      {/* Add Medical Visit Dialog (always available when state toggled) */}
+      {/* Add Medical Visit Dialog */}
       <DoctorAddVisitDialog
         isOpen={showAddVisit}
         onClose={() => setShowAddVisit(false)}
-        accessCode={patientData?.accessCode}
+        accessCode={currentAccessCode}
         onSaved={(newVisit) => {
-          // Update patientData.medicalHistory list optimistically
-          setPatientData((pd) => pd ? { ...pd, medicalHistory: [newVisit, ...(pd.medicalHistory || [])] } : pd);
           showToast('✅ Visit added to patient profile');
+          setShowAddVisit(false);
         }}
       />
 
