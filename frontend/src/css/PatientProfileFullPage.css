@@ -1,4 +1,4 @@
-/* Full Page Patient Profile Styles */
+Full Page Patient Profile Styles
 .patient-profile-fullpage {
   min-height: 100vh;
   background: #f8fafc;
@@ -181,8 +181,8 @@
 }
 
 .overview-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  /* display: grid; */
+  /* grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); */
   gap: 30px;
 }
 
@@ -192,6 +192,7 @@
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   overflow: hidden;
   border: 1px solid #e5e7eb;
+  margin: 30px;
 }
 
 .card-header {
