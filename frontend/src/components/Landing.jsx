@@ -1,10 +1,7 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { LogOut } from "lucide-react"
 import "../css/Landing.css"
-import TopBar from "./TopBar"
-import ProfileSummaryCard from "./ProfileSummaryCard"
 import PinnedHealthOverview from "./PinnedHealthOverview"
 import QuickActions from "./QuickActions"
 import MedicalHistory from "./MedicalHistory"
@@ -64,9 +61,32 @@ export default function Landing({ user: initialUser, setUser, onLogout }) {
 
   return (
     <div className="landing-container">
-      <TopBar user={user} onLogout={onLogout} />
+      <header className="dashboard-header">
+        <div className="header-container">
+          <div className="header-content">
+            <div className="header-left">
+              <div>
+                <h1 className="dashboard-title">
+                  Patient Dashboard
+                </h1>
+                <p>Welcome, {user.name}!</p>
+              </div>
+            </div>
+            <div className="header-right">
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="btn-destructive"
+                >
+                  <LogOut className="logout-icon" />
+                  Logout
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
       <div className="landing-content">
-        <ProfileSummaryCard user={user} setUser={setUserState} />
         <PinnedHealthOverview
           user={user}
           pinnedConditions={pinnedConditions}
