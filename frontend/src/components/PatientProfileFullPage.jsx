@@ -177,52 +177,7 @@ export default function PatientProfileFullPage() {
                 </div>
               </div>
 
-              {/* Chronic Conditions */}
-              <div className="overview-card">
-                <div className="card-header">
-                  <h3>Chronic Conditions</h3>
-                  <i className="fas fa-heartbeat"></i>
-                </div>
-                <div className="card-content">
-                  {pinnedConditions.slice(0, 5).map(condition => (
-                    <div key={condition._id} className="condition-overview-item">
-                      <div className="condition-name-overview">{condition.condition}</div>
-                      <div className="condition-date-overview">Since {formatDate(condition.diagnosisDate)}</div>
-                    </div>
-                  ))}
-                  {pinnedConditions.length === 0 && (
-                    <div className="empty-state">
-                      <i className="fas fa-heart"></i>
-                      <p>No chronic conditions recorded</p>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* Current Medications */}
-              <div className="overview-card">
-                <div className="card-header">
-                  <h3>Current Medications</h3>
-                  <i className="fas fa-pills"></i>
-                </div>
-                <div className="card-content">
-                  {medications.slice(0, 5).map(med => (
-                    <div key={med._id} className="medication-overview-item">
-                      <div className="med-name-overview">{med.medication}</div>
-                      <div className="med-details-overview">
-                        <span className="med-dosage-overview">{med.dosage}</span>
-                        <span className="med-frequency-overview">{med.frequency}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {medications.length === 0 && (
-                    <div className="empty-state">
-                      <i className="fas fa-pills"></i>
-                      <p>No medications recorded</p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
         )}
@@ -353,8 +308,17 @@ export default function PatientProfileFullPage() {
                 {pinnedConditions.map(condition => (
                   <div key={condition._id} className="condition-card-fullpage">
                     <div className="condition-card-header">
-                      <h4>{condition.condition}</h4>
-                      <span className="diagnosis-date">Diagnosed: {formatDate(condition.diagnosisDate)}</span>
+                      <h4>{condition.name}</h4>
+                      <div className="condition-severity-date">
+                        {condition.severity && (
+                          <span className={`severity-badge severity-${condition.severity?.toLowerCase()}`}>
+                            {condition.severity.toUpperCase()}
+                          </span>
+                        )}
+                        {condition.since && (
+                          <span className="diagnosis-date">Since: {condition.since}</span>
+                        )}
+                      </div>
                     </div>
                     
                     {condition.doctorName && (
@@ -379,7 +343,7 @@ export default function PatientProfileFullPage() {
                             alt="Prescription"
                             onClick={() => openImageModal(
                               getImageUrl(condition.prescriptionImg), 
-                              `${condition.condition} Prescription`
+                              `${condition.name} Prescription`
                             )}
                           />
                         </div>
@@ -405,7 +369,7 @@ export default function PatientProfileFullPage() {
                 {medications.map(med => (
                   <div key={med._id} className="medication-card-fullpage">
                     <div className="medication-card-header">
-                      <h4>{med.medication}</h4>
+                      <h4>{med.name}</h4>
                       <span className="medication-dosage">{med.dosage}</span>
                     </div>
                     
@@ -433,7 +397,7 @@ export default function PatientProfileFullPage() {
                             alt="Prescription"
                             onClick={() => openImageModal(
                               getImageUrl(med.prescriptionImg), 
-                              `${med.medication} Prescription`
+                              `${med.name} Prescription`
                             )}
                           />
                         </div>
