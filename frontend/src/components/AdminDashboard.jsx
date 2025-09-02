@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import '../css/AdminDashboard.css';
 
 const AdminDashboard = () => {
+    // Logout handler
+    const handleLogout = () => {
+      localStorage.removeItem('token');
+      window.location.href = '/signin'; // Redirect to sign in page
+    };
   const [stats, setStats] = useState({});
   const [doctorRequests, setDoctorRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -141,7 +146,10 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <div className="admin-header">
-        <h1>Admin Dashboard</h1>
+        <div className="admin-header-top">
+          <h1>Admin Dashboard</h1>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
         <p>Manage doctor registration requests</p>
       </div>
 
