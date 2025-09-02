@@ -204,8 +204,14 @@ router.get("/check-patient-access/:accessCode", verifyToken, async (req, res) =>
 // POST - Doctor adds a medical visit to patient via active access code
 router.post("/patients/:accessCode/medical-history", verifyToken, async (req, res) => {
   try {
+    console.log("=== Add Visit Request ===");
+    console.log("User ID:", req.user.id);
+    console.log("Access Code:", req.params.accessCode);
+    console.log("Request Body:", JSON.stringify(req.body, null, 2));
+    
     // Verify user is a doctor
     const doctor = await User.findById(req.user.id).select('role name');
+    console.log("Doctor found:", doctor);
     if (!doctor) return res.status(401).json({ message: "User not found" });
     if (doctor.role !== 'doctor') return res.status(403).json({ message: "Only doctors can add visits" });
 
@@ -217,6 +223,7 @@ router.post("/patients/:accessCode/medical-history", verifyToken, async (req, re
       expiresAt: { $gt: new Date() }
     }).populate('patient', 'id');
 
+    console.log("Code record found:", codeRecord);
     if (!codeRecord) {
       return res.status(403).json({ message: "No active access for this code" });
     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { LogOut } from "lucide-react"
+import { User, LogOut } from "lucide-react"
 import "../css/Landing.css"
 import PinnedHealthOverview from "./PinnedHealthOverview"
 import QuickActions from "./QuickActions"
@@ -65,7 +65,11 @@ export default function Landing({ user: initialUser, setUser, onLogout }) {
         <div className="header-container">
           <div className="header-content">
             <div className="header-left">
+              <div className="user-icon-box">
+                <User className="user-icon" />
+              </div>
               <div>
+                
                 <h1 className="dashboard-title">
                   Patient Dashboard
                 </h1>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/PatientProfileFullPage.css';
+import DigitalPrescriptionDialog from './DigitalPrescriptionDialog';
 
 export default function PatientProfileFullPage() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function PatientProfileFullPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedVisitId, setExpandedVisitId] = useState(null);
   const [imageModal, setImageModal] = useState({ isOpen: false, src: '', alt: '', digitalPrescription: null });
+  const [showPrescriptionDialog, setShowPrescriptionDialog] = useState(false);
+  const [medicalHistoryData, setMedicalHistoryData] = useState(patientData?.medicalHistory || []);
 
   useEffect(() => {
     // If no patient data, redirect back to doctor dashboard
@@ -64,12 +67,17 @@ export default function PatientProfileFullPage() {
   };
 
   const handleAddVisit = () => {
-    // Navigate back to doctor dashboard with add visit flag
-    navigate('/doctor', { state: { showAddVisit: true, accessCode: patientData.accessCode } });
+    setShowPrescriptionDialog(true);
   };
 
   const handleBack = () => {
     navigate('/doctor');
+  };
+
+  const handlePrescriptionSaved = (newVisit) => {
+    // Add the new visit to the medical history
+    setMedicalHistoryData(prev => [newVisit, ...prev]);
+    setShowPrescriptionDialog(false);
   };
 
   return (
@@ -128,7 +136,7 @@ export default function PatientProfileFullPage() {
           onClick={() => setActiveTab('history')}
         >
           <i className="fas fa-history"></i>
-          Medical History ({medicalHistory.length})
+          Medical History ({medicalHistoryData.length})
         </button>
         <button 
           className={`tab-nav-btn ${activeTab === 'conditions' ? 'active' : ''}`}
@@ -171,7 +179,7 @@ export default function PatientProfileFullPage() {
                       </div>
                     </div>
                   ))}
-                  {medicalHistory.length === 0 && (
+                  {medicalHistoryData.length === 0 && (
                     <p className="no-data-overview">No medical history available</p>
                   )}
                 </div>
@@ -188,7 +196,7 @@ export default function PatientProfileFullPage() {
               <h2>Complete record of medical visits and treatments</h2>
             </div>
             
-            {medicalHistory.length === 0 ? (
+            {medicalHistoryData.length === 0 ? (
               <div className="empty-state-large">
                 <i className="fas fa-calendar-times"></i>
                 <h3>No medical history available</h3>
@@ -196,7 +204,7 @@ export default function PatientProfileFullPage() {
               </div>
             ) : (
               <div className="medical-visits-list">
-                {medicalHistory.map(visit => (
+                {medicalHistoryData.map(visit => (
                   <div key={visit._id} className="medical-visit-card">
                     <div className="visit-header-expandable" onClick={() => toggleVisitExpansion(visit._id)}>
                       <div className="visit-main-details">
@@ -491,6 +499,14 @@ export default function PatientProfileFullPage() {
           </div>
         </div>
       )}
+
+      {/* Digital Prescription Dialog */}
+      <DigitalPrescriptionDialog
+        isOpen={showPrescriptionDialog}
+        onClose={() => setShowPrescriptionDialog(false)}
+        patientData={patientData}
+        onSaved={handlePrescriptionSaved}
+      />
     </div>
   );
 }
