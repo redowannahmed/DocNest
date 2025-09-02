@@ -10,6 +10,7 @@ import Landing from "./components/Landing" // Import Landing page
 import DoctorDashboard from "./components/DoctorDashboard"
 import DoctorBlogs from "./components/DoctorBlogs"
 import AdminDashboard from "./components/AdminDashboard"
+import PatientProfileFullPage from "./components/PatientProfileFullPage"
 import sessionManager from "./utils/SessionManager"
 
 function AppRouter() {
@@ -89,6 +90,12 @@ function AppRouter() {
       <Route
         path="/doctor-blogs"
         element={user ? <DoctorBlogs /> : <Navigate to="/signin" />}
+      />
+
+      {/* Patient Profile Full Page route for doctors */}
+      <Route
+        path="/patient-profile"
+        element={user && user.role === "doctor" ? <PatientProfileFullPage /> : <Navigate to="/signin" />}
       />
 
       {/* Catch all route */}
