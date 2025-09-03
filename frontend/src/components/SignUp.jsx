@@ -70,7 +70,7 @@ const SignUp = ({ onRegister }) => {
       <div className="webapp-corner">DocNest</div>
       <div>
         <h2>Create Account</h2>
-        <p className="auth-subtitle">Join us to start your learning journey</p>
+        <p className="auth-subtitle">Join now!</p>
         <form onSubmit={handleSubmit}>
           <div className="form-section personal-info">
             <div className="input-group">

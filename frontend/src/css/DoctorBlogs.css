@@ -396,7 +396,7 @@
   border-top: 2px solid #f1f5f9;
 }
 
-.comment-btn, .like-btn, .share-btn {
+.comment-btn {
   background: rgba(102, 126, 234, 0.1);
   border: 2px solid rgba(102, 126, 234, 0.2);
   color: #667eea;
@@ -411,7 +411,7 @@
   font-weight: 600;
 }
 
-.comment-btn:hover, .like-btn:hover, .share-btn:hover {
+.comment-btn:hover {
   background: #667eea;
   color: white;
   border-color: #667eea;
@@ -762,7 +762,7 @@
     gap: 0.5rem;
   }
 
-  .comment-btn, .like-btn, .share-btn {
+  .comment-btn {
     padding: 0.625rem 1rem;
     font-size: 0.85rem;
   }
@@ -811,7 +811,7 @@
     flex-direction: column;
   }
 
-  .comment-btn, .like-btn, .share-btn {
+  .comment-btn {
     justify-content: center;
     width: 100%;
   }
@@ -860,7 +860,7 @@
     flex-direction: column;
   }
 
-  .comment-btn, .like-btn, .share-btn {
+  .comment-btn {
     justify-content: center;
     width: 100%;
   }
