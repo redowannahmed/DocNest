@@ -142,6 +142,4 @@ CLOUDINARY_API_SECRET=your_api_secret
 
 * [@pfaaworkin01](https://github.com/pfaaworkin01)
 * [@saeflobor](https://github.com/saeflobor)
-* redowan (BSc Software Engineering)
-
 ---
