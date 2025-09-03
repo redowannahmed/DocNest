@@ -7,7 +7,7 @@ Full Page Patient Profile Styles
 
 /* Header */
 .fullpage-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
   color: white;
   padding: 20px 40px;
   display: flex;

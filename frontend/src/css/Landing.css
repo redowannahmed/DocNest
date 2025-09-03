@@ -11,7 +11,111 @@
   color: #1e293b;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  padding-top: 6rem; /* Reduced space for smaller fixed TopBar */
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.header-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-icon-box {
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.user-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #ffffff;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+}
+
+.welcome-text {
+  color: #6b7280;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.welcome-text .user-name,
+.user-name {
+  font-weight: 500;
+  color: #1f2937 !important;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Logout Button */
+.btn-destructive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-family: inherit;
+}
+
+.btn-destructive:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.btn-destructive:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.logout-icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 .landing-content {
@@ -47,6 +151,33 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .header-container {
+    padding: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.25rem;
+  }
+
+  .welcome-text {
+    font-size: 0.875rem;
+  }
+
+  .user-icon-box {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .user-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .btn-destructive {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+  
   .landing-content {
     padding: 1.5rem 1rem;
     gap: 1.5rem;
@@ -54,6 +185,25 @@
 }
 
 @media (max-width: 480px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .dashboard-title {
+    font-size: 1.125rem;
+  }
+
+  .welcome-text {
+    font-size: 0.8125rem;
+  }
+  
   .landing-content {
     padding: 1rem 0.75rem;
     gap: 1.5rem;

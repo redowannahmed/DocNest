@@ -271,14 +271,6 @@ export default function DoctorBlogs() {
                     <i className="fas fa-comment"></i>
                     {post.comments?.length || 0} Comments
                   </button>
-                  <button className="like-btn">
-                    <i className="fas fa-heart"></i>
-                    Helpful
-                  </button>
-                  <button className="share-btn">
-                    <i className="fas fa-share"></i>
-                    Share
-                  </button>
                 </div>
 
                 {post.comments && post.comments.length > 0 && (

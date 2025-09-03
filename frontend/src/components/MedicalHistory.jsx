@@ -81,6 +81,13 @@ export default function MedicalHistory({ user, medicalHistory = [], setMedicalHi
 
   // Function to open image in modal
   const openImageModal = (imageUrl, altText, digitalPrescription = null) => {
+    console.log('Opening digital prescription modal with data:', digitalPrescription);
+    if (digitalPrescription) {
+      console.log('Medications:', digitalPrescription.medications);
+      console.log('Tests:', digitalPrescription.tests);
+      console.log('Follow-up date:', digitalPrescription.followUpDate);
+      console.log('Advice:', digitalPrescription.advice);
+    }
     setImageModal({
       isOpen: true,
       src: imageUrl,
